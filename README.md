@@ -22,8 +22,8 @@
 1. **Phase 0 & 1 On-Device Discovery:** A 2-day conversational onboarding pipeline powered by **Gemma 3 (4B QAT int4)** executing locally on the Snapdragon NPU via LiteRT + Qualcomm AI Engine Direct (QNN).
 2. **Phase 2 Vector Extraction:** Personality encoding using **EmbeddingGemma 300M**, MRL-compressed into a privacy-preserving **128-dimensional vector**.
 3. **Phase 3 Compatibility Match Engine:** Local mathematical scoring using normalized cosine similarity:
-   $$\text{score} = \text{round}\left(\frac{\text{cosine\_similarity}(A, B) + 1}{2} \times 100\right)$$
-   Includes the **"101 Cosmic Match"** rarity badge awarded when compatibility ranks in the top **0.5%** AND the pair shares **$$\ge 2$$ rare niche tags**.
+   $$\text{score} = \text{round}\left(\frac{\text{cosine}_{\text{similarity}}(A, B) + 1}{2} \times 100\right)$$
+   Includes the **"101 Cosmic Match"** rarity badge awarded when compatibility ranks in the top **0.5%** AND the pair shares **$\ge 2$ rare niche tags**.
 4. **Phase 4 Anonymous Bonding Window:** 7-day anonymous communication channel backed by an **On-Device PII Guardrail** (Regex + Gemma Prompt Guard + `FLAG_SECURE`) to prevent contact detail leakage.
 5. **iQOO-to-iQOO Tap-to-Connect:** Offline peer discovery via Android Nearby Connections API (BLE advertisement + Wi-Fi Direct channel) for instant in-person compatibility checks and offline chat.
 
