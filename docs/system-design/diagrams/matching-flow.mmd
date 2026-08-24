@@ -1,0 +1,26 @@
+%% SoulSync Compatibility Vector Matching & Cosmic 101 Rarity Logic
+%% Color Palette: Ivory #FFF9F7, Blush Pink #F9E4EA, Rose #E79BAF, Deep Plum #47223B, Soft Gold #C9A27E
+
+flowchart TD
+    %% Styling Classes
+    classDef startNode fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef processNode fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef decisionNode fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef badgeNode fill:#C9A27E,stroke:#47223B,stroke-width:3px,color:#47223B;
+    classDef standardNode fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    Start(["Input: Vector A & Vector B (128-dim MRL)"]):::startNode --> Cosine["Execute Cosine Similarity Math:<br/>cos_sim = dot(A, B) / (norm(A) * norm(B))"]:::processNode
+    
+    Cosine --> NormScore["Normalize Score to Percentage:<br/>score = round( (cos_sim + 1) / 2 * 100 )"]:::processNode
+    
+    NormScore --> PercentileCheck{"Is similarity score<br/>in User's top 0.5%?"}:::decisionNode
+    
+    PercentileCheck -- YES --> TagCheck{"Do profiles share<br/>>= 2 Rare Niche Tags?"}:::decisionNode
+    PercentileCheck -- NO --> StandardDisplay["Display Standard Compatibility Score %<br/>(e.g., '87% Match')"]:::standardNode
+    
+    TagCheck -- YES --> CosmicBadge["AWARD '101 COSMIC MATCH' BADGE!<br/>(Gamified Rarity Mechanic)"]:::badgeNode
+    TagCheck -- NO --> HighDisplay["Display High Compatibility Score %<br/>(e.g., '99% Match')"]:::standardNode
+    
+    CosmicBadge --> FinalOutput(["Render Match Card in Phase 3 Screen"]):::startNode
+    StandardDisplay --> FinalOutput
+    HighDisplay --> FinalOutput

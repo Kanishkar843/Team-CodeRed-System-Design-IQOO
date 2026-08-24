@@ -1,0 +1,34 @@
+%% SoulSync iQOO-to-iQOO Tap-to-Connect Offline Discovery Flow
+%% Color Palette: Ivory #FFF9F7, Blush Pink #F9E4EA, Rose #E79BAF, Deep Plum #47223B, Soft Gold #C9A27E
+
+sequenceDiagram
+    autonumber
+    actor UserA as iQOO Device A
+    participant NearbyA as Nearby Connections (Device A)
+    participant NearbyB as Nearby Connections (Device B)
+    actor UserB as iQOO Device B
+    participant MathEngine as Local Vector Math Engine
+
+    rect rgb(249, 228, 234)
+    note over UserA, UserB: BLE Peer Discovery Phase
+    UserA->>NearbyA: Tap "Tap-to-Connect" Button
+    NearbyA->>NearbyB: BLE Advertisement Beacon Broadcast
+    NearbyB-->>NearbyA: BLE Scan Response & Endpoint Discovery
+    end
+
+    rect rgb(231, 155, 175)
+    note over UserA, UserB: Wi-Fi Direct P2P Handshake & Key Exchange
+    NearbyA->>NearbyB: Initiate P2P Connection Request
+    NearbyB-->>NearbyA: Accept Connection & Swap ECDH Ephemeral Keys
+    NearbyA->>NearbyB: Establish Encrypted Wi-Fi Direct Socket
+    end
+
+    rect rgb(201, 162, 126)
+    note over UserA, UserB: Offline Compatibility & Chat Bootstrap
+    NearbyA->>NearbyB: Exchange 128-dim MRL Vectors & Niche Tags
+    NearbyA->>MathEngine: Calculate Cosine Similarity & Check 101 Badge
+    MathEngine-->>UserA: Display Match % & "Cosmic 101" Status
+    NearbyB->>MathEngine: Calculate Cosine Similarity & Check 101 Badge
+    MathEngine-->>UserB: Display Match % & "Cosmic 101" Status
+    UserA->>UserB: Open Direct Offline P2P Encrypted Chat Channel
+    end
