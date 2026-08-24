@@ -20,17 +20,18 @@
 
 ## 18+ Age Gating & Consent-First Onboarding
 
-To protect minors and ensure legal compliance:
+```mermaid
+flowchart TD
+    classDef check fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef reject fill:#47223B,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef accept fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
 
-```
-+-------------------------------------------------------------------------------+
-|                       AGE VERIFICATION & CONSENT FLOW                         |
-|                                                                               |
-|   [ Government ID / Phone OTP ] ---> [ Age Check (>=18) ] ---> [ Explicit Consent ]
-|                                                |                       |      |
-|                                                v (Under 18)            v      v
-|                                        [ REJECT & BLOCK ]        [ ONBOARDING ]
-+-------------------------------------------------------------------------------+
+    StartVerify["Phone OTP & Government ID / Age KYC"]:::check --> AgeCheck{"Is User Age >= 18?"}:::check
+    AgeCheck -- NO --> RejectApp["REJECT & BLOCK ACCESS IMMEDIATELY"]:::reject
+    AgeCheck -- YES --> ConsentScreen["Renders Explicit Consent Agreement Screen"]:::check
+    ConsentScreen --> AcceptChoice{"User Accepts On-Device AI Terms?"}:::check
+    AcceptChoice -- REJECT --> RejectApp
+    AcceptChoice -- ACCEPT --> EnterPhase0["Grant Onboarding Access (Phase 0)"]:::accept
 ```
 
 1. **Age Gating:** Users must verify age via phone OTP and third-party identity verification (e.g., DigiLocker / age-gate API). Access is strictly prohibited for users under 18 years of age.
@@ -64,17 +65,16 @@ During Phase 4 anonymous chat, users are protected against harassment:
 
 If an on-device Gemma 3 dialogue or Phase 4 message contains indicators of self-harm, severe emotional distress, or domestic abuse:
 
-```
-+-------------------------------------------------------------------------------+
-|                       CRISIS INTERVENTION EMERGENCY OVERLAY                   |
-|                                                                               |
-|  [ Distress Phrase Detected ] ---> [ Pause Normal AI Response Flow ]           |
-|                                                  |                            |
-|                                                  v                            |
-|                       [ Render Direct Emergency Call Buttons ]                 |
-|                       - Tele-MANAS Hotline: 14416 (India Toll-Free)           |
-|                       - iCall Helpline: +91 9152987821                        |
-+-------------------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    classDef detect fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef overlay fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef helpline fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    Detect["Self-Harm / Abuse Distress Keyword Detected"]:::detect --> PauseFlow["Pause Standard AI Dialogue Generation"]:::detect
+    PauseFlow --> OverlayUI["Render Emergency Crisis Overlay View"]:::overlay
+    OverlayUI --> TeleManas["Tele-MANAS Hotline: 14416 (Toll-Free India)"]:::helpline
+    OverlayUI --> ICall["iCall Mental Health Helpline: +91 9152987821"]:::helpline
 ```
 
 * **Tele-MANAS Hotline (India):** Direct one-tap call button to `14416` (National Tele Mental Health Programme of India).

@@ -20,6 +20,25 @@
 
 ---
 
+## Global API Communication Architecture
+
+```mermaid
+graph LR
+    classDef client fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef auth fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef relay fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef push fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    Client["Android Client App"]:::client -->|POST /v1/auth/register| Auth["Firebase Auth"]:::auth
+    Client -->|POST /v1/relay/match/submit-vector| Relay["Match Relay Microservice"]:::relay
+    Client -->|GET /v1/relay/match/pending| Relay
+    Client <-->|WS /v1/relay/chat/stream| Relay
+    Relay -->|POST /v1/push/notify| Push["FCM Push Service"]:::push
+    Push -->|Deliver Alert| Client
+```
+
+---
+
 ## Global Authentication & Header Standard
 
 All HTTPS requests to the SoulSync Relay server must include the following headers:

@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > **TL;DR**  
-> **Who cares:** Hackathon judges, product managers, privacy auditors, and non-engineering evaluators.  
+> **Who cares:** Hackathon evaluators, product managers, privacy auditors, and non-engineering judges.  
 > **What it does:** Outlines SoulSync’s product vision, core problem statement, phase-based user lifecycle, and architectural boundaries.  
 > **Why this approach:** Solves online dating fatigue and privacy violations by executing 100% of LLM personality analysis locally on the smartphone NPU.  
 > **What it costs:** Zero server-side AI compute cost; requires an Android device with Snapdragon NPU acceleration.
@@ -10,8 +10,6 @@
 ---
 
 ## Acronym Glossary
-
-To ensure clarity for all evaluators, the following technical terms are defined upon first usage:
 
 * **NPU (Neural Processing Unit):** Dedicated hardware silicon inside modern mobile processors optimized for matrix math and deep neural network acceleration.
 * **LLM (Large Language Model):** Generative artificial intelligence models capable of understanding and synthesizing natural language dialogues.
@@ -31,22 +29,30 @@ Modern online dating applications suffer from three systemic flaws:
 2. **Privacy & Data Exploitation:** Centralized servers store sensitive intimate conversations, making user profiles vulnerable to data breaches, unauthorized data scraping, and third-party monetization.
 3. **Behavioral Inauthenticity:** Gamified interfaces incentivize users to project idealized personas rather than revealing authentic psychological traits.
 
-### The SoulSync Solution
-**SoulSync** is an AI-powered social connection platform that transforms relationship discovery. Instead of swiping through photo grids, users participate in a **2-day conversational discovery window** guided by an on-device AI assistant powered by **Gemma 3 (4B QAT int4)**. The local NPU synthesizes conversational nuances into a privacy-preserving **128-dimensional Matryoshka personality vector**. 
+### The SoulSync Privacy Guarantee
 
-Matches are calculated using local mathematical vector comparison, ensuring that **no cloud LLM ever sees or stores user chat content**.
+```mermaid
+flowchart LR
+    classDef device fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef npu fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef vector fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef cloud fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
 
-```
-+-------------------------------------------------------------------------------+
-|                             SOULSYNC PRIVACY PROMISE                          |
-|                                                                               |
-|   +--------------------+     +---------------------+     +----------------+   |
-|   | User Chat Dialogue | --> | On-Device NPU (Gemma)| --> | 128-dim Vector |   |
-|   +--------------------+     +---------------------+     +----------------+   |
-|            |                            |                        |            |
-|            X (NEVER LEAVES DEVICE)      X (LOCAL INFERENCE ONLY)   v            |
-|                                                          [ Minimal Cloud ]    |
-+-------------------------------------------------------------------------------+
+    subgraph PhoneBoundary["iQOO Mobile Sandbox (Local Device Only)"]
+        ChatInput["User Conversation Turns"]:::device
+        NPUEngine["Qualcomm NPU<br/>(Gemma 3 4B int4)"]:::npu
+        MRLCompressor["EmbeddingGemma<br/>(128-dim Vector)"]:::vector
+    end
+
+    subgraph CloudBoundary["Minimal Cloud Relay"]
+        RelayNode["Stateless Match Relay"]:::cloud
+    end
+
+    ChatInput -->|Private Turns| NPUEngine
+    NPUEngine -->|Profile Summary| MRLCompressor
+    MRLCompressor -->|128-dim Vector Hash ONLY| RelayNode
+    
+    ChatInput -.-x|STRICTLY BLOCKED FROM CLOUD| RelayNode
 ```
 
 ---
@@ -68,46 +74,24 @@ SoulSync is engineered mobile-first for modern flagship Android hardware, with a
 
 ## The 5-Phase User Lifecycle
 
-SoulSync structures user onboarding and interaction into five distinct operational phases:
+```mermaid
+flowchart TD
+    classDef phase fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef active fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef cosmic fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
 
+    P0["Phase 0: Registration & Base Profile Setup<br/>(Photos, Prompts, Relationship Goal)"]:::phase --> P1["Phase 1: 2-Day On-Device AI Discovery<br/>(Gemma 3 int4 Guided Psychology Dialogue)"]:::active
+    P1 --> P2["Phase 2: Personality Vector Extraction<br/>(EmbeddingGemma 128-dim MRL Vector)"]:::phase
+    P2 --> P3["Phase 3: Privacy-Preserving Matching<br/>(Normalized Cosine Score + Cosmic 101 Badge)"]:::cosmic
+    P3 --> P4["Phase 4: 7-Day Anonymous Bonding Window<br/>(On-Device PII Guardrails + Day 7 Contact Unlock)"]:::active
 ```
-[Phase 0: Registration] --> [Phase 1: 2-Day AI Talk] --> [Phase 2: Vector Extract]
-                                                                  |
-[Phase 4: 7-Day Anon Window] <-- [Phase 3: Compatibility Match] <--+
-```
 
-### Phase 0 — Registration & Base Profile Setup
-* User registers via Firebase Authentication.
-* User builds a profile specifying photos, prompt answers, core preferences, age verification (18+), and relationship goals (**Soulmate** vs. **Casual**).
-
-### Phase 1 — 2-Day On-Device AI Discovery Conversation
-* User engages in guided natural language dialogue with an on-device instance of Gemma 3 (4B QAT int4).
-* The AI asks psychological, lifestyle, and values-based questions.
-* At the end of each daily session, an NPU summarization algorithm condenses the conversation into rolling profile memory.
-
-### Phase 2 — On-Device Personality Vector Extraction
-* Upon completing the 2-day discovery period, EmbeddingGemma 300M processes the profile data and dialogue summaries.
-* Outputs a 768-dimensional embedding, which is MRL-compressed into a privacy-preserving **128-dimensional vector** representing psychological traits and niche interests.
-
-### Phase 3 — Compatibility Matching & Cosmic Rarity
-* The client exchanges 128-dim vectors via a minimal cloud relay.
-* Compatibility score is derived using normalized cosine similarity:
-  $$\text{score} = \text{round}\left(\frac{\text{cosine\_similarity}(A, B) + 1}{2} \times 100\right)$$
-* **"101 Cosmic Match" Badge:** Awarded exclusively when the similarity score ranks in the top **0.5%** of the user base AND the pair shares **$$\ge 2$$ rare niche tags** (a gamified rarity mechanic; the underlying mathematical score never exceeds 100%).
-
-### Phase 4 — 7-Day Anonymous Bonding Window
-* Matched users enter a 7-day anonymous chat channel where only anonymized User IDs are displayed.
-* **On-Device PII Guardrail:** Continuously monitors outbound messages using regex, Gemma prompt guards, and `FLAG_SECURE` window protection to block sharing of phone numbers, emails, social handles, or photos.
-* **Day 7 Unlocking:** After 7 days of verified interaction, both users can mutually consent to unlock true profiles, direct contact information, voice calls, and video calls.
-
----
-
-## Bonus Feature: iQOO-to-iQOO Tap-to-Connect
-
-For instant in-person discovery (e.g., at events or social gatherings), SoulSync incorporates **Tap-to-Connect**:
-* Utilizes Android Nearby Connections API for offline Bluetooth Low Energy (BLE) discovery.
-* Automatically establishes a high-bandwidth Wi-Fi Direct peer-to-peer (P2P) channel between two iQOO devices.
-* Performs offline local vector exchange, compatibility score calculation, and direct chat bootstrapping without requiring active cellular internet coverage.
+### Phase Breakdown
+* **Phase 0 — Registration:** User builds a profile with photos, preferences, age verification (18+), and relationship goal (**Soulmate** vs. **Casual**).
+* **Phase 1 — 2-Day AI Chat:** User engages in guided natural language dialogue with on-device Gemma 3. Daily sessions roll into profile memory.
+* **Phase 2 — Vector Extraction:** EmbeddingGemma 300M processes profile data into a privacy-preserving **128-dimensional MRL vector**.
+* **Phase 3 — Compatibility Matching:** Vectors are exchanged via minimal cloud relay. Similarity score is calculated locally via $\text{score} = \text{round}\left(\frac{\text{cos\_sim} + 1}{2} \times 100\right)$. Rare pairs (top 0.5% + $\ge 2$ niche tags) receive the **"101 Cosmic Match"** badge.
+* **Phase 4 — 7-Day Anonymous Window:** Matched users chat anonymously. On-device PII Guardrails block phone numbers, emails, handles, or photos. Day 7 unlocks full identity exchange.
 
 ---
 
@@ -117,7 +101,6 @@ For instant in-person discovery (e.g., at events or social gatherings), SoulSync
 1. Complete Android client system design using Kotlin, Jetpack Compose, and Room SQLite.
 2. Full technical integration spec for Qualcomm AI Engine Direct (QNN) and LiteRT.
 3. Complete security model for on-device PII guardrails and privacy-preserving vector exchange.
-4. Detailed data schemas, REST/WebSocket API endpoints, and 30-hour hackathon execution plan.
 
 ### Explicit Non-Goals
 1. **Cloud LLM Hosting:** Server-side LLM inference is explicitly excluded from the architecture.

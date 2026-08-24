@@ -21,23 +21,23 @@
 
 ## Model Footprint & NPU Hardware Ergonomics
 
-SoulSync executes two distinct on-device AI models downloaded during initial application setup via Qualcomm AI Hub.
+```mermaid
+graph TD
+    classDef gemma fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef embed fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef runtime fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
 
-```
-+-----------------------------------------------------------------------------------+
-|                        ON-DEVICE AI MODEL ALLOCATION (RAM/VRAM)                   |
-|                                                                                   |
-|  +--------------------------------------------+  +-----------------------------+  |
-|  | Gemma 3 (4B QAT int4)                      |  | EmbeddingGemma (300M)       |  |
-|  | - Footprint: ~2.5 GB                       |  | - Footprint: ~300 MB        |  |
-|  | - Purpose: 2-Day Conversation & Guard      |  | - Purpose: 128-dim MRL Vector|  |
-|  +--------------------------------------------+  +-----------------------------+  |
-|                                         |                                         |
-|                                         v                                         |
-|  +-----------------------------------------------------------------------------+  |
-|  | LiteRT Runtime + Qualcomm AI Engine Direct (QNN) NPU Delegate               |  |
-|  +-----------------------------------------------------------------------------+  |
-+-----------------------------------------------------------------------------------+
+    subgraph MemoryAllocation["System RAM / NPU VRAM Budget (~2.8 GB Total)"]
+        GemmaModel["Gemma 3 (4B QAT int4)<br/>Footprint: ~2.5 GB<br/>Role: 2-Day Conversation & Guard"]:::gemma
+        EmbedModel["EmbeddingGemma (300M)<br/>Footprint: ~300 MB<br/>Role: 128-dim MRL Generator"]:::embed
+    end
+
+    subgraph NPURuntime["Qualcomm Hexagon NPU Hardware Execution Engine"]
+        LiteRTRuntime["LiteRT + Qualcomm AI Engine Direct (QNN) Delegate<br/>Speed: ~28 tokens/sec on Snapdragon 8 Elite Gen 5"]:::runtime
+    end
+
+    GemmaModel --> LiteRTRuntime
+    EmbedModel --> LiteRTRuntime
 ```
 
 ### 1. Conversational Engine: Gemma 3 (4B QAT int4)
@@ -58,17 +58,15 @@ SoulSync executes two distinct on-device AI models downloaded during initial app
 
 The context window for Gemma 3 is strictly budgeted at **3,584 tokens** to optimize NPU RAM consumption:
 
-```
-+-------------------------------------------------------------------------------+
-|                      GEMMA 3 CONTEXT WINDOW BUDGET (3,584 TOKENS)             |
-|                                                                               |
-|  [ System Persona & Rules ]    [ Daily Profile Memory ]   [ Recent Turn Buffer]
-|         512 Tokens                    1,024 Tokens             2,048 Tokens   |
-+-------------------------------------------------------------------------------+
+```mermaid
+pie title Gemma 3 NPU Context Window Allocation (3,584 Tokens)
+    "System Persona & Rules (512 Tokens)" : 512
+    "Rolling Profile Memory (1,024 Tokens)" : 1024
+    "Recent Turn Dialogue Buffer (2,048 Tokens)" : 2048
 ```
 
 ### Context Allocation Breakdown
-1. **System Persona & Guard Rules (512 Tokens):** Fixed prompt instructing Gemma 3 to act as an empathetic, curious relationship discovery guide while enforcing safety rules.
+1. **System Persona & Guard Rules (512 Tokens):** Fixed prompt instructing Gemma 3 to act as an empathetic relationship guide while enforcing safety rules.
 2. **Rolling Profile Memory (1,024 Tokens):** Condensed summary digest of previous conversation turns and user preferences.
 3. **Recent Turn Dialogue Buffer (2,048 Tokens):** Active sliding window storing the most recent 10 conversation turns.
 
@@ -83,8 +81,6 @@ To prevent context overflow at the end of Day 1 and Day 2:
 
 ## Prompt-Injection & Adversarial Defenses
 
-Because Gemma 3 executes user text directly on-device, SoulSync implements multi-layer prompt injection protection:
-
 1. **Delimiter Isolation:** User input is strictly wrapped inside custom structural XML tags (`<user_input>...</user_input>`).
 2. **System Rule Precedence:** System instructions are injected after user inputs to ensure system guardrails override user manipulation attempts.
 3. **Pattern Sanitization:** Input text containing system override triggers (e.g., `"Ignore previous instructions"`, `"System mode: ON"`) is stripped prior to LLM processing.
@@ -95,25 +91,21 @@ Because Gemma 3 executes user text directly on-device, SoulSync implements multi
 
 During the Phase 4 7-day anonymous bonding window, SoulSync enforces a **3-Tiered PII Interceptor System**:
 
-```
-[ Outbound User Text ]
-         |
-         v
-+-------------------------------+
-| TIER 1: REGEX INTERCEPTOR     | ---> MATCHED? ---> BLOCK IMMEDIATELY
-| (Phone, Email, Handles, URLs) |
-+-------------------------------+
-         | PASS
-         v
-+-------------------------------+
-| TIER 2: GEMMA PROMPT GUARD    | ---> DETECTED? ---> BLOCK & APPLY COOLDOWN
-| (Semantic Evasion Analysis)   |
-+-------------------------------+
-         | PASS
-         v
-+-------------------------------+
-| TIER 3: OUTBOUND TRANSMISSION | ---> ENCRYPT & SEND TO RELAY
-+-------------------------------+
+```mermaid
+flowchart TD
+    classDef input fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef tier1 fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef tier2 fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef block fill:#47223B,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef pass fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    InputMsg["Outbound User Message"]:::input --> Tier1["Tier 1: Regex Interceptor<br/>(Phone, Email, Handles, URLs)"]:::tier1
+    
+    Tier1 -- MATCH DETECTED --> Block1["BLOCK Message Immediately & Show Alert"]:::block
+    Tier1 -- PASS --> Tier2["Tier 2: On-Device Gemma Prompt Guard<br/>(Semantic Evasion Analysis)"]:::tier2
+    
+    Tier2 -- VIOLATION DETECTED --> Block2["BLOCK Message & Apply Cooldown Timer"]:::block
+    Tier2 -- SAFE --> PassTier["Tier 3: Encrypted Outbound Transmission<br/>(FLAG_SECURE Protected Window)"]:::pass
 ```
 
 ### Tier 1: Pattern Regex Interceptor (Instant)

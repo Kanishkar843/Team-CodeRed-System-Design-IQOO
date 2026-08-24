@@ -21,24 +21,26 @@
 
 ## Storage Architecture Overview
 
-SoulSync enforces a strict **Storage Partitioning Model**:
+```mermaid
+graph TB
+    classDef local fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef keyfill fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef cloud fill:#FFF9F7,stroke:#47223B,stroke-dasharray: 5 5,stroke-width:2px,color:#47223B;
 
-```
-+-------------------------------------------------------------------------------+
-|                             LOCAL STORAGE (ON-DEVICE)                         |
-|  - Full Encrypted Room DB (SQLCipher)                                         |
-|  - Tables: User, Profile, PersonalityVector, Match, ChatMessage, Guardrail    |
-|  - Encryption: AES-256 keys generated in Android Hardware Keystore            |
-+-------------------------------------------------------------------------------+
-                                      |
-                                      | Anonymized Hashes & 128-dim Vectors Only
-                                      v
-+-------------------------------------------------------------------------------+
-|                             CLOUD STORAGE (RELAY DB)                          |
-|  - Stateless Redis / PostgreSQL Cache                                         |
-|  - Schemas: Anonymized Match Relays, FCM Push Tokens                          |
-|  - ZERO Chat Content, ZERO Names, ZERO Uncompressed Embeddings                 |
-+-------------------------------------------------------------------------------+
+    subgraph LocalStorage["On-Device Encrypted Local Storage Sandbox"]
+        KeyStore["Android Hardware KeyStore<br/>(MasterKey AES-256 GCM)"]:::keyfill
+        RoomDB[("SQLCipher Encrypted Room DB<br/>(Tables: User, Profile, Vector, Match, Chat)")]:::local
+        Prefs["EncryptedSharedPreferences<br/>(Tokens & Session Keys)"]:::local
+    end
+
+    subgraph CloudStorage["Stateless Cloud Relay (Minimal Cache)"]
+        RedisCache["Redis / PostgreSQL Match Cache<br/>(Anonymized 128-dim Hashes ONLY)"]:::cloud
+    end
+
+    KeyStore -->|Decrypt Database Key| RoomDB
+    KeyStore -->|Decrypt Session Keys| Prefs
+    RoomDB -.-x|STRICTLY BLOCKED: Chat & Photos| CloudStorage
+    RoomDB -->|Anonymized 128-dim Vector Hash ONLY| RedisCache
 ```
 
 ---
@@ -134,20 +136,12 @@ Local security audit log tracking blocked PII attempts.
 
 ## Data Encryption Strategy (SQLCipher & Android Keystore)
 
-```
-+-------------------------------------------------------------------------------+
-|                           ANDROID HARDWARE KEYSTORE                           |
-|  - Key Alias: "SoulSyncMasterKey"                                             |
-|  - AES-256 GCM Key generated inside hardware-backed TEE / StrongBox           |
-+-------------------------------------------------------------------------------+
-                                      |
-                                      | Decrypts Master Key at App Launch
-                                      v
-+-------------------------------------------------------------------------------+
-|                            SQLCIPHER ROOM DATABASE                            |
-|  - Database File: /data/user/0/co.soulsync.app/databases/soulsync_secure.db   |
-|  - All page reads/writes encrypted via AES-256 in memory                      |
-+-------------------------------------------------------------------------------+
+```mermaid
+graph TD
+    classDef key fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef db fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    TEE["Android Hardware TEE / StrongBox KeyStore<br/>Alias: 'SoulSyncMasterKey'<br/>(AES-256 GCM)"]:::key -->|Decrypt Master Key at Launch| Room["SQLCipher SQLite Database File<br/>/data/user/0/co.soulsync.app/databases/soulsync_secure.db<br/>(AES-256 CBC Encrypted Pages)"]:::db
 ```
 
 1. **Database Encryption:** SQLite database is fully encrypted using **SQLCipher** with AES-256 in CBC mode.

@@ -22,15 +22,14 @@
 
 Because on-device AI requires downloading ~2.8 GB of model weights (Gemma 3 int4 + EmbeddingGemma), SoulSync optimizes bandwidth distribution:
 
-```
-+-------------------------------------------------------------------------------+
-|                         MODEL CDN DISTRIBUTION PIPELINE                       |
-|                                                                               |
-|   +-----------------------+     +-------------------+     +---------------+   |
-|   | Global CDN Edge Nodes | --> | Wi-Fi Download    | --> | Local Storage |   |
-|   | (Cloudflare / Akamai) |     | Background Worker |     | App Sandbox   |   |
-|   +-----------------------+     +-------------------+     +---------------+   |
-+-------------------------------------------------------------------------------+
+```mermaid
+flowchart LR
+    classDef cdn fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef client fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef storage fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+
+    CDN["Global CDN Edge Nodes<br/>(Cloudflare / Akamai Segmented Distribution)"]:::cdn -->|Unmetered Wi-Fi Download| Worker["Background Download Manager<br/>(Segmented Multi-threaded Worker)"]:::client
+    Worker -->|Store & Verify Checksum| Sandbox["App Local Sandbox<br/>(/data/user/0/co.soulsync/models/)"]:::storage
 ```
 
 1. **Initial Download Strategy:** Models are downloaded over unmetered Wi-Fi connections during initial setup using segmented multi-threaded downloads.
@@ -51,13 +50,15 @@ As the user base expands to millions of accounts, comparing candidate vectors se
 
 Running neural networks on mobile silicon generates heat and consumes battery power. SoulSync enforces strict NPU power constraints:
 
-```
-+-------------------------------------------------------------------------------+
-|                         NPU POWER & THERMAL DUTY CYCLES                       |
-|                                                                               |
-|  [ Active Chat (28 tok/s) ] ---> [ Duty Cycle Pause ] ---> [ Sustained Temp ] |
-|  - Power Draw: ~1.2W              - Cool-down: 500ms        - Max Temp: 39°C   |
-+-------------------------------------------------------------------------------+
+```mermaid
+graph TD
+    classDef active fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef pause fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef stable fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    Active["Active Inference Burst<br/>(10 Tokens @ 28 tok/s)<br/>Power: ~1.2W Draw"]:::active --> DutyPause["Duty Cycle Duty Pause<br/>(500ms NPU Cooldown Interval)"]:::pause
+    DutyPause --> TempStable["Sustained Thermal Equilibrium<br/>(Cap Temperature < 39°C)<br/>Battery Drain: <4%/hour"]:::stable
+    TempStable --> Active
 ```
 
 1. **Duty Cycle Throttling:** During active Phase 1 conversation, inference is executed in 10-token bursts followed by 500ms duty-cycle pauses, capping NPU power draw at **1.2W** and keeping battery drain under **4% per hour**.

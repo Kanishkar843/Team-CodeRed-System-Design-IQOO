@@ -22,43 +22,56 @@
 
 ## High-Level System Architecture Diagram
 
-```
-+-----------------------------------------------------------------------------------+
-|                            SOULSYNC MOBILE CLIENT DEVICE                          |
-|                                                                                   |
-|  +-----------------------------------------------------------------------------+  |
-|  | PRESENTATION LAYER (Android Kotlin + Jetpack Compose)                       |  |
-|  | - Phase 0-4 UI Screens   - Profile Builder   - Chat & PII Alert Views       |  |
-|  +-----------------------------------------------------------------------------+  |
-|                                       | (Internal State / Flow)                   |
-|                                       v                                           |
-|  +-----------------------------------------------------------------------------+  |
-|  | DOMAIN & LOCAL DATA LAYER (Android Architecture Components + Room DB)       |  |
-|  | - Encrypted Room SQLite  - EncryptedSharedPreferences  - Session Manager    |  |
-|  +-----------------------------------------------------------------------------+  |
-|                     |                                    |                        |
-|                     | (NPU Task Execution)               | (P2P Handshake)        |
-|                     v                                    v                        |
-|  +-------------------------------------+  +------------------------------------+  |
-|  | ON-DEVICE AI CORE LAYER             |  | CONNECTIVITY LAYER                 |  |
-|  | - LiteRT + Qualcomm QNN Delegate    |  | - Android Nearby Connections API   |  |
-|  | - Gemma 3 (4B QAT int4) LLM Engine  |  | - BLE Discovery Engine             |  |
-|  | - EmbeddingGemma 300M (128 MRL)    |  | - Wi-Fi Direct P2P Channel         |  |
-|  | - On-Device PII Guardrail Filter    |  | - Offline Match & Chat Bootstrap   |  |
-|  +-------------------------------------+  +------------------------------------+  |
-+-----------------------------------------------------------------------------------+
-                                        |                                  
-                                        | HTTPS / WSS (Anonymized Tokens Only)
-                                        v                                  
-+-----------------------------------------------------------------------------------+
-|                             MINIMAL CLOUD INFRASTRUCTURE                          |
-|                                                                                   |
-|  +---------------------------+  +--------------------------+  +----------------+  |
-|  | Firebase Authentication   |  | FCM / APNs Push Relay    |  | Match Relay    |  |
-|  | - Phone / Email Auth      |  | - Phase 4 Match Alerts   |  | - 128-dim MRL  |  |
-|  | - Anonymized User Tokens  |  | - P2P Signal Ping        |  | - Vector Exchange |
-|  +---------------------------+  +--------------------------+  +----------------+  |
-+-----------------------------------------------------------------------------------+
+```mermaid
+graph TB
+    classDef ui fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef domain fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef ai fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef mesh fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef cloud fill:#FFF9F7,stroke:#47223B,stroke-dasharray: 5 5,stroke-width:2px,color:#47223B;
+
+    subgraph MobileDevice["iQOO 15 Mobile Client Boundary (On-Device)"]
+        subgraph PresentationLayer["1. Presentation Layer"]
+            ComposeUI["Jetpack Compose UI<br/>(Phase 0-4 Screen Flow)"]:::ui
+        end
+
+        subgraph DomainLayer["2. Domain & Storage Layer"]
+            RoomDB[("SQLCipher Encrypted Room DB<br/>(AES-256 KeyStore)")]:::domain
+            SessionMgr["Session & Phase Manager"]:::domain
+        end
+
+        subgraph AICoreLayer["3. On-Device AI Core Layer (Snapdragon NPU)"]
+            LiteRT["LiteRT + QNN Delegate"]:::ai
+            GemmaLLM["Gemma 3 (4B QAT int4)<br/>Conversational Engine"]:::ai
+            EmbedEngine["EmbeddingGemma (300M)<br/>128-dim MRL Generator"]:::ai
+            GuardrailEngine["PII Guardrail Filter<br/>(Regex + Gemma Guard)"]:::ai
+        end
+
+        subgraph MeshLayer["4. Connectivity Layer"]
+            NearbyP2P["Android Nearby Connections<br/>(BLE + Wi-Fi Direct)"]:::mesh
+        end
+    end
+
+    subgraph CloudInfra["5. Minimal Cloud Infrastructure"]
+        FirebaseAuth["Firebase Auth Service"]:::cloud
+        MatchRelay["Stateless Match Relay<br/>(128-dim Vector Router)"]:::cloud
+        FCMPush["FCM / APNs Push Relay"]:::cloud
+    end
+
+    ComposeUI --> SessionMgr
+    SessionMgr --> RoomDB
+    ComposeUI --> GuardrailEngine
+    
+    SessionMgr --> LiteRT
+    LiteRT --> GemmaLLM
+    LiteRT --> EmbedEngine
+    
+    ComposeUI --> NearbyP2P
+    
+    SessionMgr --> FirebaseAuth
+    EmbedEngine -->|Anonymized 128-dim Vector| MatchRelay
+    MatchRelay --> FCMPush
+    FCMPush --> ComposeUI
 ```
 
 ---

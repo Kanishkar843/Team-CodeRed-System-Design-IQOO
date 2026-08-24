@@ -21,46 +21,61 @@
 
 ## Critical Flow 1: Registration & Profile Setup (Phase 0)
 
-```
-[ User ]          [ Compose UI ]        [ Auth ViewModel ]      [ Firebase Auth ]      [ Encrypted Room DB ]
-   |                    |                       |                      |                        |
-   |-- 1. Enter Phone ->|                       |                      |                        |
-   |                    |-- 2. Verify OTP ----->|                      |                        |
-   |                    |                       |-- 3. Auth Token ---->|                        |
-   |                    |                       |<-- 4. Auth Success --|                        |
-   |-- 5. Fill Prompts->|                       |                      |                        |
-   |-- 6. Select Goal ->|                       |                      |                        |
-   |   (Soulmate/Casual)|                       |                      |                        |
-   |                    |-- 7. Save Profile --->|                      |                        |
-   |                    |                       |---------------------------------------------->|
-   |                    |                       |        8. Insert Encrypted Profile            |
-   |                    |<-- 9. Phase 0 Done ---|                                               |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Mobile User
+    participant UI as Jetpack Compose UI
+    participant VM as Auth ViewModel
+    participant Auth as Firebase Auth SDK
+    participant DB as Encrypted Room DB
+
+    User->>UI: 1. Enter Phone Number
+    UI->>VM: 2. Submit Verification Request
+    VM->>Auth: 3. Send OTP Request
+    Auth-->>VM: 4. OTP Sent Signal
+    User->>UI: 5. Input OTP Code
+    UI->>VM: 6. Verify OTP Code
+    VM->>Auth: 7. Validate Credentials
+    Auth-->>VM: 8. Auth Success (Returns ID Token)
+    User->>UI: 9. Fill Prompts & Goal (Soulmate/Casual)
+    UI->>VM: 10. Save Profile Package
+    VM->>DB: 11. Insert Encrypted Profile Record
+    DB-->>UI: 12. Confirm Phase 0 Complete
 ```
 
 ### Plain-English Explanation
-> **Read in 60 seconds:** When you sign up, you verify your phone number using Firebase. You then answer fun setup prompts and pick your relationship goal (soulmate or casual). Everything you type is stored inside an encrypted vault on your phone. Nothing is sent to a cloud chat server.
+> **Read in 60 seconds:** When you sign up, you verify your phone number using Firebase. You then answer setup prompts and pick your relationship goal (soulmate or casual). Everything you type is stored inside an encrypted vault on your phone. Nothing is sent to a cloud chat server.
 
 ---
 
 ## Critical Flow 2: On-Device 2-Day AI Chat & Rolling Summarization (Phase 1)
 
-```
-[ User ]      [ Chat Screen ]    [ NPU Execution Pool ]   [ Gemma 3 (4B int4) ]   [ Daily Summarizer ]   [ Room DB ]
-   |                 |                     |                        |                      |                  |
-   |-- 1. Send Msg ->|                     |                        |                      |                  |
-   |                 |-- 2. Push Prompt -->|                        |                      |                  |
-   |                 |                     |-- 3. Load Context ---->|                      |                  |
-   |                 |                     |                       (NPU Inference)         |                  |
-   |                 |                     |<-- 4. Stream Response -|                      |                  |
-   |                 |<-- 5. Render Stream |                        |                      |                  |
-   |                 |                     |                        |                      |                  |
-   |                 |  (End of Day 1 / 2) |                        |                      |                  |
-   |                 |-------------------------------------------------------------------->|                  |
-   |                 |                        6. Trigger Session Summarization             |                  |
-   |                 |                                                                     |-- 7. Extract --->|
-   |                 |                                                                     |    Key Traits    |
-   |                 |                                                                     |--> 8. Save ----->|
-   |                 |                                                                     |    Summary       |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Mobile User
+    participant UI as Chat Screen View
+    participant NPU as LiteRT + QNN Delegate
+    participant Gemma as Gemma 3 (4B QAT int4)
+    participant Summarizer as Daily Summarizer Task
+    participant DB as Encrypted Room DB
+
+    rect rgb(249, 228, 234)
+    note right of User: Active On-Device Conversation
+    User->>UI: 1. Send Dialogue Text
+    UI->>NPU: 2. Dispatch Prompt Context Buffer
+    NPU->>Gemma: 3. Execute NPU Stream Inference (~28 tok/s)
+    Gemma-->>UI: 4. Stream Response Tokens to Screen
+    UI->>DB: 5. Save Encrypted Conversation Turn
+    end
+
+    rect rgb(231, 155, 175)
+    note right of User: Daily Session Summarization
+    UI->>Summarizer: 6. Trigger End-of-Day Session Summary
+    Summarizer->>NPU: 7. Extract Psychological Traits
+    NPU-->>DB: 8. Update Profile Summary Digest
+    end
 ```
 
 ### Plain-English Explanation
@@ -70,18 +85,21 @@
 
 ## Critical Flow 3: Personality Vector Extraction & MRL Compression (Phase 2)
 
-```
-[ Phase Manager ]   [ Room DB ]   [ EmbeddingGemma Engine ]   [ MRL Compressor ]   [ Local Vector Cache ]
-        |                |                    |                        |                      |
-        |-- 1. Trigger ->|                    |                        |                      |
-        |   Phase 2      |-- 2. Read Logs --->|                        |                      |
-        |                |    (Summaries)     |                        |                      |
-        |                |                    |-- 3. Generate -------->|                      |
-        |                |                    |    768-dim Vector      |                      |
-        |                |                    |                        |-- 4. Truncate to --->|
-        |                |                    |                        |    128-dim MRL       |
-        |                |                    |                        |                      |-- 5. Store -->|
-        |                |                    |                        |                      |    Vector     |
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Manager as Phase 2 Manager
+    participant DB as Encrypted Room DB
+    participant EmbedEngine as EmbeddingGemma (300M)
+    participant MRL as MRL Compression Module
+    participant Cache as Local Vector Storage
+
+    Manager->>DB: 1. Fetch 2-Day Session Summary Digest
+    DB-->>EmbedEngine: 2. Provide Text Summaries & Prompts
+    EmbedEngine->>EmbedEngine: 3. Generate 768-dim Embedding Vector
+    EmbedEngine->>MRL: 4. Truncate & Normalize to 128-dim MRL
+    MRL->>Cache: 5. Store Encrypted 128-dim Vector & Niche Tags
+    Cache-->>Manager: 6. Confirm Phase 2 Complete
 ```
 
 ### Plain-English Explanation
@@ -91,26 +109,25 @@
 
 ## Critical Flow 4: Compatibility Matching & "101 Cosmic Match" Rarity Evaluation (Phase 3)
 
-```
-[ Client App A ]      [ Cloud Match Relay ]      [ Client App B ]      [ Local Math Engine ]
-       |                         |                      |                         |
-       |-- 1. Post 128-dim Vector|                      |                         |
-       |   + Hash ID ------------>|                      |                         |
-       |                         |<-- 2. Post Vector ---|                         |
-       |                         |    (Vector B)        |                         |
-       |                         |                      |                         |
-       |<-- 3. Deliver Candidate |                      |                         |
-       |    Vector B ------------|--------------------->|                         |
-       |                         |                      |                         |
-       |------------------------------------------------------------------------->|
-       |                           4. Execute Cosine Similarity Score Calculation |
-       |                                              score = round((cos + 1)/2 * 100)
-       |                                                                          |
-       |                                  5. Evaluate Rarity: top 0.5% & >=2 tags? |
-       |                                  +---------------------------------------+
-       |                                  | YES -> Award "101 Cosmic Match" Badge |
-       |                                  | NO  -> Display Standard % Score       |
-       |                                  +---------------------------------------+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant ClientA as Client App A
+    participant Relay as Cloud Match Relay
+    participant ClientB as Client App B
+    participant Math as Local Vector Math Engine
+
+    ClientA->>Relay: 1. Submit Anonymized 128-dim Vector & Niche Tags
+    ClientB->>Relay: 2. Submit Anonymized 128-dim Vector & Niche Tags
+    Relay-->>ClientA: 3. Deliver Candidate Vector B
+    ClientA->>Math: 4. Compute Cosine Similarity: score = round((cos + 1)/2 * 100)
+    Math->>Math: 5. Evaluate Rarity: Is Score in Top 0.5% AND Shared Tags >= 2?
+    
+    alt Rarity Met (Top 0.5% & >= 2 Niche Tags)
+        Math-->>ClientA: 6a. Award "101 Cosmic Match" Badge!
+    else Standard Match
+        Math-->>ClientA: 6b. Display Standard Compatibility Score %
+    end
 ```
 
 ### Plain-English Explanation
@@ -120,27 +137,30 @@
 
 ## Critical Flow 5: Phase 4 Anonymous 7-Day Bonding Window & On-Device PII Guardrail Enforcement
 
-```
-[ Sender User ]   [ Compose UI ]   [ Regex Filter ]   [ Gemma Guard ]   [ FLAG_SECURE ]   [ Relay Server ]   [ Receiver ]
-       |                |                 |                  |                 |                 |                |
-       |-- 1. Type Msg->|                 |                  |                 |                 |                |
-       |   "Call me at  |                 |                  |                 |                 |                |
-       |   9876543210"  |-- 2. Check ---->|                  |                 |                 |                |
-       |                |   Phone/Email   |                  |                 |                 |                |
-       |                |   (MATCHED!)    |                  |                 |                 |                |
-       |                |<-- 3. BLOCK! ---|                  |                 |                 |                |
-       |                |   Warn User     |                  |                 |                 |                |
-       |                |                 |                  |                 |                 |                |
-       |-- 4. Try Text->|                 |                  |                 |                 |                |
-       |   "Reach me on |-- 5. Pass Regex |                  |                 |                 |                |
-       |   Insta handle"|----------------------------------->|                 |                 |                |
-       |                |           6. Evaluate Prompt Guard |                 |                 |                |
-       |                |           (DETECTS SOCIAL HANDLE!) |                 |                 |                |
-       |                |<---------- 7. BLOCK & COOLDOWN ----|                 |                 |                |
-       |                |                 |                  |                 |                 |                |
-       |-- 8. Valid Msg>|-- 9. Guard OK ->|----------------------------------->|                 |                |
-       |   "I love sci- |                 |                  |                 |--10. Forward--->|                |
-       |   fi books!"   |                 |                  |                 |   Encrypted     |--11. Deliver-->|
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Sender User
+    participant UI as Chat View (FLAG_SECURE)
+    participant Regex as Tier 1 Regex Interceptor
+    participant GemmaGuard as Tier 2 Gemma Prompt Guard
+    participant Relay as Encrypted WebSocket Relay
+    actor Partner as Recipient Match Partner
+
+    User->>UI: 1. Type "Call me at 9876543210"
+    UI->>Regex: 2. Scan Text for Phone/Email Patterns
+    Regex-->>UI: 3. MATCH DETECTED! BLOCK Immediately & Warn User
+    
+    User->>UI: 4. Type "Find my Insta handle john_doe"
+    UI->>Regex: 5. Scan Text (Passes Tier 1)
+    UI->>GemmaGuard: 6. Semantic Evaluation (Prompt Guard)
+    GemmaGuard-->>UI: 7. DETECTED SOCIAL HANDLE! BLOCK & Mute User
+    
+    User->>UI: 8. Type "I love reading sci-fi books!"
+    UI->>Regex: 9. Scan Text (PASS)
+    UI->>GemmaGuard: 10. Semantic Check (PASS)
+    UI->>Relay: 11. Transmit Encrypted Payload
+    Relay-->>Partner: 12. Deliver Anonymous Message
 ```
 
 ### Plain-English Explanation
