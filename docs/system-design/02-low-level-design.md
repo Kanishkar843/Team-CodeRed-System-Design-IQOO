@@ -3,7 +3,7 @@
 > [!NOTE]
 > **TL;DR**  
 > **Who cares:** Mobile software developers, QA automation leads, and technical reviewers.  
-> **What it does:** Details low-level execution logic and sequence flows across SoulSync's 5 critical operational phases and PII guardrails.  
+> **What it does:** Details low-level execution logic and sequence flows across PyaarPremaKaadhal's 5 critical operational phases and PII guardrails.  
 > **Why this approach:** Guarantees deterministic execution across on-device NPU pipelines, local storage transactions, and network relays.  
 > **What it costs:** 100-300ms local NPU execution latency during vector generation; zero network overhead for LLM chat.
 
@@ -44,9 +44,6 @@ sequenceDiagram
     DB-->>UI: 12. Confirm Phase 0 Complete
 ```
 
-### Plain-English Explanation
-> **Read in 60 seconds:** When you sign up, you verify your phone number using Firebase. You then answer setup prompts and pick your relationship goal (soulmate or casual). Everything you type is stored inside an encrypted vault on your phone. Nothing is sent to a cloud chat server.
-
 ---
 
 ## Critical Flow 2: On-Device 2-Day AI Chat & Rolling Summarization (Phase 1)
@@ -78,9 +75,6 @@ sequenceDiagram
     end
 ```
 
-### Plain-English Explanation
-> **Read in 60 seconds:** For two days, you chat naturally with Gemma 3, an AI living inside your phone's processor. The AI asks questions about your values and daily life. At night, the AI summarizes the key personality points into a compact daily log and saves it securely in your local vault.
-
 ---
 
 ## Critical Flow 3: Personality Vector Extraction & MRL Compression (Phase 2)
@@ -101,9 +95,6 @@ sequenceDiagram
     MRL->>Cache: 5. Store Encrypted 128-dim Vector & Niche Tags
     Cache-->>Manager: 6. Confirm Phase 2 Complete
 ```
-
-### Plain-English Explanation
-> **Read in 60 seconds:** Once the 2-day chat finishes, SoulSync takes your profile answers and daily summaries and feeds them into EmbeddingGemma (an on-device AI model). It creates a 768-number map of your personality, then instantly shrinks it to a compact 128-number code using Matryoshka compression. This 128-number code hides raw details while preserving your core personality traits.
 
 ---
 
@@ -129,9 +120,6 @@ sequenceDiagram
         Math-->>ClientA: 6b. Display Standard Compatibility Score %
     end
 ```
-
-### Plain-English Explanation
-> **Read in 60 seconds:** Your phone sends its anonymized 128-number code to a tiny relay server, which swaps it with potential matching partners. Your phone receives candidate codes and calculates compatibility using vector math locally. If two people score in the top 0.5% AND share at least 2 rare niche hobbies, both phones award a special "101 Cosmic Match" badge!
 
 ---
 
@@ -162,9 +150,6 @@ sequenceDiagram
     UI->>Relay: 11. Transmit Encrypted Payload
     Relay-->>Partner: 12. Deliver Anonymous Message
 ```
-
-### Plain-English Explanation
-> **Read in 60 seconds:** During the 7-day anonymous window, you chat with your match using anonymized IDs. Before any message leaves your phone, an on-device safety guard scans it. If you try to send phone numbers, emails, or social media handles, the message is instantly blocked locally, and a warning is shown. Screenshotting is physically blocked by Android system flags (`FLAG_SECURE`).
 
 ---
 

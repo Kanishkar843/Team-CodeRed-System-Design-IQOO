@@ -66,7 +66,7 @@ pie title Gemma 3 NPU Context Window Allocation (3,584 Tokens)
 ```
 
 ### Context Allocation Breakdown
-1. **System Persona & Guard Rules (512 Tokens):** Fixed prompt instructing Gemma 3 to act as an empathetic relationship guide while enforcing safety rules.
+1. **System Persona & Guard Rules (512 Tokens):** Fixed prompt instructing Gemma 3 to act as an empathetic relationship discovery guide while enforcing safety rules.
 2. **Rolling Profile Memory (1,024 Tokens):** Condensed summary digest of previous conversation turns and user preferences.
 3. **Recent Turn Dialogue Buffer (2,048 Tokens):** Active sliding window storing the most recent 10 conversation turns.
 
@@ -89,7 +89,7 @@ To prevent context overflow at the end of Day 1 and Day 2:
 
 ## PII Guardrail Architecture (Phase 4 Anonymous Window)
 
-During the Phase 4 7-day anonymous bonding window, SoulSync enforces a **3-Tiered PII Interceptor System**:
+During the Phase 4 7-day anonymous bonding window, PyaarPremaKaadhal enforces a **3-Tiered PII Interceptor System**:
 
 ```mermaid
 flowchart TD
@@ -126,4 +126,4 @@ If text passes Tier 1 regex, Gemma 3 evaluates subtle or obfuscated evasion atte
 
 ### Mandatory Safety Disclaimer
 > [!IMPORTANT]
-> The PII Guardrail system is a **friction and detection framework** designed to prevent inadvertent data sharing and discourage policy violations. It does **not** claim to provide an absolute 100% mathematical guarantee against determined human adversarial evasion (e.g., steganography or offline code words).
+> The PII Guardrail system is a **friction and detection framework** designed to prevent inadvertent contact sharing and discourage policy violations. It does **not** claim to provide an absolute 100% mathematical guarantee against determined human adversarial evasion (e.g., steganography or offline code words).

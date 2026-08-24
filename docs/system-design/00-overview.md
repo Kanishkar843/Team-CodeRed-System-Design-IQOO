@@ -2,9 +2,9 @@
 
 > [!NOTE]
 > **TL;DR**  
-> **Who cares:** Hackathon evaluators, product managers, privacy auditors, and non-engineering judges.  
-> **What it does:** Outlines SoulSync’s product vision, core problem statement, phase-based user lifecycle, and architectural boundaries.  
-> **Why this approach:** Solves online dating fatigue and privacy violations by executing 100% of LLM personality analysis locally on the smartphone NPU.  
+> **Who cares:** Hackathon evaluators, product managers, privacy auditors, and system architects.  
+> **What it does:** Outlines PyaarPremaKaadhal’s product vision, core problem statement, phase-based user lifecycle, and architectural boundaries.  
+> **Why this approach:** Solves relationship discovery fatigue and data privacy violations by executing 100% of LLM personality analysis locally on the smartphone NPU.  
 > **What it costs:** Zero server-side AI compute cost; requires an Android device with Snapdragon NPU acceleration.
 
 ---
@@ -23,13 +23,13 @@
 
 ## Problem Statement & Product Vision
 
-Modern online dating applications suffer from three systemic flaws:
+Modern social platforms and relationship discovery systems suffer from three systemic flaws:
 
 1. **Superficial Swipe Fatigue:** User evaluation relies almost entirely on visual presentation, leading to shallow interactions and rapid user churn.
 2. **Privacy & Data Exploitation:** Centralized servers store sensitive intimate conversations, making user profiles vulnerable to data breaches, unauthorized data scraping, and third-party monetization.
 3. **Behavioral Inauthenticity:** Gamified interfaces incentivize users to project idealized personas rather than revealing authentic psychological traits.
 
-### The SoulSync Privacy Guarantee
+### The PyaarPremaKaadhal Privacy Guarantee
 
 ```mermaid
 flowchart LR
@@ -59,7 +59,7 @@ flowchart LR
 
 ## Target Audience & Hardware Specifications
 
-SoulSync is engineered mobile-first for modern flagship Android hardware, with an eventual path to iOS via Swift.
+PyaarPremaKaadhal is engineered mobile-first for modern flagship Android hardware, with an eventual path to iOS via Swift.
 
 ### Primary Hardware Benchmark: iQOO 15
 * **System on Chip (SoC):** Qualcomm Snapdragon 8 Elite Gen 5.

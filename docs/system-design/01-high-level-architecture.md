@@ -3,7 +3,7 @@
 > [!NOTE]
 > **TL;DR**  
 > **Who cares:** System architects, mobile leads, privacy auditors, and infrastructure engineers.  
-> **What it does:** Defines SoulSync's multi-layered system architecture separating client UI, on-device AI runtime, offline mesh, and minimal cloud relay.  
+> **What it does:** Defines PyaarPremaKaadhal's multi-layered system architecture separating client UI, on-device AI runtime, offline mesh, and minimal cloud relay.  
 > **Why this approach:** Enforces absolute privacy isolation by keeping chat history and raw embeddings bounded inside local app storage.  
 > **What it costs:** Minimal server overhead (microsecond relay routing); NPU power draw managed via hardware duty cycles.
 
@@ -76,11 +76,9 @@ graph TB
 
 ---
 
-## Plain-English Explanation of Architecture Diagram
+## Architectural Isolation Principle
 
-> [!TIP]
-> **Read this in 60 seconds:**  
-> The diagram illustrates the complete separation between what happens **on your phone** versus **in the cloud**. Everything related to your personal thoughts, chats, and AI personality analysis stays strictly inside the top box (your phone). The bottom box (the cloud server) acts like a blind mailman: it only carries anonymized math numbers (128-dimensional vectors) and notification alerts between matched phones. It never sees your name, photos, or chat messages.
+The architecture guarantees complete isolation between **on-device client operations** and **cloud infrastructure**. All user dialogues, raw profile responses, and full embedding tensors remain strictly within the local device sandbox. The cloud relay layer operates in a stateless, zero-knowledge capacity, processing only anonymized 128-dimensional vectors and routing push notifications.
 
 ---
 

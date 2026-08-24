@@ -141,7 +141,7 @@ graph TD
     classDef key fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
     classDef db fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
 
-    TEE["Android Hardware TEE / StrongBox KeyStore<br/>Alias: 'SoulSyncMasterKey'<br/>(AES-256 GCM)"]:::key -->|Decrypt Master Key at Launch| Room["SQLCipher SQLite Database File<br/>/data/user/0/co.soulsync.app/databases/soulsync_secure.db<br/>(AES-256 CBC Encrypted Pages)"]:::db
+    TEE["Android Hardware TEE / StrongBox KeyStore<br/>Alias: 'PyaarPremaKaadhalMasterKey'<br/>(AES-256 GCM)"]:::key -->|Decrypt Master Key at Launch| Room["SQLCipher SQLite Database File<br/>/data/user/0/co.pyaarpremakaadhal.app/databases/pyaarpremakaadhal_secure.db<br/>(AES-256 CBC Encrypted Pages)"]:::db
 ```
 
 1. **Database Encryption:** SQLite database is fully encrypted using **SQLCipher** with AES-256 in CBC mode.

@@ -3,7 +3,7 @@
 > [!NOTE]
 > **TL;DR**  
 > **Who cares:** Backend developers, integration leads, QA engineers, and mobile developers.  
-> **What it does:** Specifies REST, WebSocket, FCM push, and local Android IPC payload formats for SoulSync.  
+> **What it does:** Specifies REST, WebSocket, FCM push, and local Android IPC payload formats for PyaarPremaKaadhal.  
 > **Why this approach:** Restricts cloud API surface area exclusively to match exchange and signal routing, preventing chat payload exposure.  
 > **What it costs:** Minimal cloud bandwidth (~5 KB/day per active user); microsecond server routing latency.
 
@@ -41,13 +41,13 @@ graph LR
 
 ## Global Authentication & Header Standard
 
-All HTTPS requests to the SoulSync Relay server must include the following headers:
+All HTTPS requests to the PyaarPremaKaadhal Relay server must include the following headers:
 
 ```http
 Authorization: Bearer <Firebase_ID_Token>
 Content-Type: application/json
-X-SoulSync-Client-Version: 1.0.0-android
-X-SoulSync-Platform: Android-iQOO
+X-PyaarPremaKaadhal-Client-Version: 1.0.0-android
+X-PyaarPremaKaadhal-Platform: Android-iQOO
 ```
 
 ---
@@ -73,7 +73,7 @@ Exchanges a verified Firebase authentication token to establish an anonymized us
   "data": {
     "anon_user_id": "usr_anon_98f4a1c0d2e3",
     "session_expires_at": 1787590000,
-    "relay_cluster_endpoint": "wss://relay.soulsync.co/v1/relay/chat/stream"
+    "relay_cluster_endpoint": "wss://relay.pyaarpremakaadhal.co/v1/relay/chat/stream"
   }
 }
 ```
@@ -155,7 +155,7 @@ Retrieves potential candidate vectors matching the user's relationship goal pref
 Full-duplex encrypted WebSocket connection for routing Phase 4 anonymous chat messages.
 
 * **Client Connection Handshake:**
-  `wss://relay.soulsync.co/v1/relay/chat/stream?token=<Firebase_ID_Token>&anon_id=usr_anon_98f4a1c0d2e3`
+  `wss://relay.pyaarpremakaadhal.co/v1/relay/chat/stream?token=<Firebase_ID_Token>&anon_id=usr_anon_98f4a1c0d2e3`
 
 * **Outbound Message Payload (Client -> Server):**
 ```json
@@ -216,7 +216,7 @@ Triggers an out-of-band FCM/APNs push notification when a new match is generated
 
 Used during offline BLE / Wi-Fi Direct exchange via Android Nearby Connections API.
 
-* **Service ID:** `co.soulsync.nearby.TAP_TO_CONNECT`
+* **Service ID:** `co.pyaarpremakaadhal.nearby.TAP_TO_CONNECT`
 * **Payload Type:** `BYTES`
 
 ```json

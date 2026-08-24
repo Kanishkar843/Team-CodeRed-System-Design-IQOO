@@ -1,6 +1,6 @@
 # Mermaid Diagram Rendering Instructions
 
-This directory contains master Mermaid (`.mmd`) source files for all visual diagrams in the SoulSync system design specification.
+This directory contains master Mermaid (`.mmd`) source files for all visual diagrams in the PyaarPremaKaadhal system design specification.
 
 ---
 

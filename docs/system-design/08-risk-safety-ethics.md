@@ -4,7 +4,7 @@
 > **TL;DR**  
 > **Who cares:** Ethics boards, legal counsel, compliance officers, and user safety leads.  
 > **What it does:** Outlines age-gating, consent mechanics, statutory alignment (DPDP Act India), abuse reporting, and crisis intervention.  
-> **Why this approach:** Establishes trust, safety, and legal compliance in an intimate dating application environment.  
+> **Why this approach:** Establishes trust, safety, and legal compliance in an intimate social connection application environment.  
 > **What it costs:** Adds mandatory age verification step; 0 risk of central chat database subpoena because chat data remains on-device.
 
 ---
@@ -41,9 +41,9 @@ flowchart TD
 
 ## Alignment with India's DPDP Act 2023
 
-SoulSync is architected to comply natively with the **Digital Personal Data Protection (DPDP) Act 2023**:
+PyaarPremaKaadhal is architected to comply natively with the **Digital Personal Data Protection (DPDP) Act 2023**:
 
-| Statutory Requirement | SoulSync Technical Implementation |
+| Statutory Requirement | PyaarPremaKaadhal Technical Implementation |
 | :--- | :--- |
 | **Data Minimization (Sec. 4)** | Central servers only process 128-dim anonymized MRL vectors. Zero chat logs or raw media are collected centrally. |
 | **Purpose Limitation (Sec. 5)** | Vector embeddings are processed strictly for compatibility scoring and automatically purged upon account deletion. |
@@ -86,4 +86,4 @@ flowchart TD
 
 > [!WARNING]
 > **Safety Boundary Declaration:**  
-> The on-device PII Guardrail (Regex + Gemma Prompt Guard + `FLAG_SECURE`) is designed as a **friction and policy enforcement tool** to prevent inadvertent contact sharing and deter bad actors. It does **not** claim to provide an absolute 100% mathematical guarantee against determined human adversarial evasion (such as steganography, complex homoglyph substitution, or offline code words). SoulSync encourages users to exercise personal caution during the Phase 4 anonymous window.
+> The on-device PII Guardrail (Regex + Gemma Prompt Guard + `FLAG_SECURE`) is designed as a **friction and policy enforcement tool** to prevent inadvertent contact sharing and deter bad actors. It does **not** claim to provide an absolute 100% mathematical guarantee against determined human adversarial evasion (such as steganography, complex homoglyph substitution, or offline code words). PyaarPremaKaadhal encourages users to exercise personal caution during the Phase 4 anonymous window.

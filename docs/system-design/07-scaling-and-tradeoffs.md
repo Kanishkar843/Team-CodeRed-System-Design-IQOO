@@ -4,7 +4,7 @@
 > **TL;DR**  
 > **Who cares:** VP of Engineering, infrastructure architects, sustainability leads, and technical reviewers.  
 > **What it does:** Analyzes system scaling beyond prototype stage, model CDN distribution, regional relays, thermal/power budgets, and trade-offs.  
-> **Why this approach:** Ensures SoulSync scales to millions of users without exploding server bills or melting device batteries.  
+> **Why this approach:** Ensures PyaarPremaKaadhal scales to millions of users without exploding server bills or melting device batteries.  
 > **What it costs:** Model distribution CDN costs (~$0.02 per user download); zero ongoing server LLM compute costs.
 
 ---
@@ -20,7 +20,7 @@
 
 ## Model CDN Distribution & Differential Updates
 
-Because on-device AI requires downloading ~2.8 GB of model weights (Gemma 3 int4 + EmbeddingGemma), SoulSync optimizes bandwidth distribution:
+Because on-device AI requires downloading ~2.8 GB of model weights (Gemma 3 int4 + EmbeddingGemma), PyaarPremaKaadhal optimizes bandwidth distribution:
 
 ```mermaid
 flowchart LR
@@ -29,7 +29,7 @@ flowchart LR
     classDef storage fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
 
     CDN["Global CDN Edge Nodes<br/>(Cloudflare / Akamai Segmented Distribution)"]:::cdn -->|Unmetered Wi-Fi Download| Worker["Background Download Manager<br/>(Segmented Multi-threaded Worker)"]:::client
-    Worker -->|Store & Verify Checksum| Sandbox["App Local Sandbox<br/>(/data/user/0/co.soulsync/models/)"]:::storage
+    Worker -->|Store & Verify Checksum| Sandbox["App Local Sandbox<br/>(/data/user/0/co.pyaarpremakaadhal/models/)"]:::storage
 ```
 
 1. **Initial Download Strategy:** Models are downloaded over unmetered Wi-Fi connections during initial setup using segmented multi-threaded downloads.
@@ -48,7 +48,7 @@ As the user base expands to millions of accounts, comparing candidate vectors se
 
 ## Energy & Thermal Budgeting on the NPU
 
-Running neural networks on mobile silicon generates heat and consumes battery power. SoulSync enforces strict NPU power constraints:
+Running neural networks on mobile silicon generates heat and consumes battery power. PyaarPremaKaadhal enforces strict NPU power constraints:
 
 ```mermaid
 graph TD
