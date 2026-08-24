@@ -32,13 +32,13 @@
 ## 📱 Mobile App Prototype
 
 <p align="center">
-  <img src="./docs/assets/Screenshot 2026-08-24 205914.png"
+  <img src="./docs/assets/ai_discovery.png"
        alt="PyaarPremaKaadhal AI Discovery"
        width="30%">
-  <img src="./docs/assets/Screenshot 2026-08-24 210231.png"
+  <img src="./docs/assets/compatibility_match.png"
        alt="PyaarPremaKaadhal Matching"
        width="30%">
-  <img src="./docs/assets/Screenshot 2026-08-24 210645.png"
+  <img src="./docs/assets/tap_to_connect.png"
        alt="PyaarPremaKaadhal Tap-to-Connect"
        width="30%">
 </p>
