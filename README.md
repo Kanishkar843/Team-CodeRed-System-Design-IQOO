@@ -29,6 +29,32 @@
 
 ---
 
+## 📱 Mobile App Prototype
+
+<p align="center">
+  <img src="./docs/assets/Screenshot 2026-08-24 205914.png"
+       alt="PyaarPremaKaadhal AI Discovery"
+       width="30%">
+  <img src="./docs/assets/Screenshot 2026-08-24 210231.png"
+       alt="PyaarPremaKaadhal Matching"
+       width="30%">
+  <img src="./docs/assets/Screenshot 2026-08-24 210645.png"
+       alt="PyaarPremaKaadhal Tap-to-Connect"
+       width="30%">
+</p>
+
+<p align="center">
+  <b>AI Discovery</b> &nbsp;&nbsp;&nbsp;
+  <b>Compatibility & Cosmic Match</b> &nbsp;&nbsp;&nbsp;
+  <b>iQOO Tap-to-Connect</b>
+</p>
+
+> A privacy-first relationship discovery experience powered by
+> on-device AI, personality embeddings, compatibility intelligence,
+> anonymous bonding, and iQOO Tap-to-Connect.
+
+---
+
 ## 📑 Master System Design Specification Index
 
 All primary system design documents are located under [`docs/system-design/`](file:///c:/Users/Administrator/Downloads/Team-CodeRed-System-Design-IQOO/docs/system-design/):
