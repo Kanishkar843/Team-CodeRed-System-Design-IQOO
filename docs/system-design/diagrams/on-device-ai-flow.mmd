@@ -1,0 +1,36 @@
+%% SoulSync On-Device AI Execution Flow Sequence Diagram
+%% Color Palette: Ivory #FFF9F7, Blush Pink #F9E4EA, Rose #E79BAF, Deep Plum #47223B, Soft Gold #C9A27E
+
+sequenceDiagram
+    autonumber
+    actor User as User (Client App)
+    participant UI as Jetpack Compose UI
+    participant NPU as Snapdragon NPU (LiteRT + QNN)
+    participant Gemma as Gemma 3 (4B QAT int4)
+    participant Embed as EmbeddingGemma (300M)
+    participant Guard as PII Guardrail Interceptor
+    participant DB as Encrypted Room DB
+
+    rect rgb(249, 228, 234)
+    note right of User: Phase 1: 2-Day AI Conversation
+    User->>UI: Input Chat Message
+    UI->>NPU: Submit Prompt Context
+    NPU->>Gemma: Execute Stream Inference (~28 tok/s)
+    Gemma-->>UI: Stream Tokens to Screen
+    UI->>DB: Save Encrypted Turn Log
+    end
+
+    rect rgb(231, 155, 175)
+    note right of User: Phase 2: Vector Extraction & MRL Compression
+    DB->>NPU: Fetch 2-Day Summarized Dialogue
+    NPU->>Embed: Generate 768-dim Embedding
+    Embed->>NPU: Matryoshka Compression (MRL)
+    NPU-->>DB: Save 128-dim Vector & Niche Tags
+    end
+
+    rect rgb(201, 162, 126)
+    note right of User: Phase 4: Anonymous Chat Guardrail
+    User->>Guard: Send Text "Call me at 9876543210"
+    Guard->>Guard: Tier 1 Regex Interceptor (Detects Phone Number!)
+    Guard-->>User: BLOCK Message & Display Warning Alert
+    end

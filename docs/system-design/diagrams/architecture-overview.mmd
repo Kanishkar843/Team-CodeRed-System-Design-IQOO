@@ -1,0 +1,46 @@
+%% SoulSync High-Level System Context & Container Diagram
+%% Color Palette: Ivory #FFF9F7, Blush Pink #F9E4EA, Rose #E79BAF, Deep Plum #47223B, Soft Gold #C9A27E
+
+graph TB
+    %% Styling Classes
+    classDef client fill:#F9E4EA,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef aiCore fill:#E79BAF,stroke:#47223B,stroke-width:2px,color:#FFF9F7;
+    classDef cloud fill:#FFF9F7,stroke:#47223B,stroke-width:2px,color:#47223B;
+    classDef badge fill:#C9A27E,stroke:#47223B,stroke-width:2px,color:#47223B;
+
+    subgraph ClientDevice["iQOO 15 Android Mobile Device (Client Boundary)"]
+        UI["Jetpack Compose UI<br/>(Phase 0-4 Presentation)"]:::client
+        RoomDB[("Encrypted Room SQLite DB<br/>(AES-256 SQLCipher)")]:::client
+        
+        subgraph AICore["On-Device AI Engine (Qualcomm NPU)"]
+            LiteRT["LiteRT + QNN Delegate"]:::aiCore
+            Gemma3["Gemma 3 (4B QAT int4)<br/>~2.5 GB Footprint"]:::aiCore
+            EmbedGemma["EmbeddingGemma (300M)<br/>128-dim MRL Generator"]:::aiCore
+            Guardrail["PII Guardrail Filter<br/>(Regex + Gemma Guard)"]:::aiCore
+        end
+
+        Connectivity["Android Nearby Connections<br/>(BLE + Wi-Fi Direct Mesh)"]:::client
+    end
+
+    subgraph MinimalCloud["Minimal Cloud Infrastructure (Stateless)"]
+        FirebaseAuth["Firebase Auth"]:::cloud
+        CloudRelay["Match Relay Server<br/>(128-dim Vector Exchange)"]:::cloud
+        FCM["FCM / APNs Push Service"]:::cloud
+    end
+
+    CosmicBadge["101 Cosmic Match Engine"]:::badge
+
+    %% Relationships
+    UI -->|Local User Input| RoomDB
+    UI -->|Invoke Inference| LiteRT
+    LiteRT --> Gemma3
+    LiteRT --> EmbedGemma
+    UI -->|Filter Messages| Guardrail
+    EmbedGemma -->|128-dim Vector| CosmicBadge
+    
+    UI -->|Offline P2P| Connectivity
+    
+    UI -->|Auth Token| FirebaseAuth
+    CosmicBadge -->|Anonymized Vector Hash| CloudRelay
+    CloudRelay -->|Push Signal| FCM
+    FCM -->|Deliver Alert| UI
