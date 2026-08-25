@@ -3,24 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PyaarPremaKaadhal — Mobile UI Prototype</title>
+  <title>PyaarPremaKaadhal — Figma Interactive Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-pink: #ff3b75;
-      --deep-pink: #e01e5a;
-      --soft-pink: #fff0f4;
-      --pastel-pink: #ffd6e3;
-      --border-pink: #ffc2d4;
+      --pink-primary: #ff3b75;
+      --pink-soft: #fff0f4;
+      --pink-border: #ffc2d4;
       --gradient-pink: linear-gradient(135deg, #ff4b7d 0%, #ff2a6d 100%);
-      --gradient-gold: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
       --text-dark: #1f0f15;
       --text-muted: #85616e;
-      --bg-white: #ffffff;
-      --shadow-soft: 0 10px 30px rgba(255, 59, 117, 0.12);
-      --shadow-sm: 0 4px 15px rgba(255, 59, 117, 0.08);
     }
 
     * {
@@ -29,620 +23,199 @@
       padding: 0;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
-    body {
-      background-color: #0d0609;
-      min-height: 100vh;
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #0b0508;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: var(--text-dark);
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    /* Device Container Frame */
-    .phone-frame {
+    /* Mobile Prototype Frame */
+    .prototype-container {
       width: 100%;
-      max-width: 412px;
-      height: 100vh;
-      max-height: 892px;
-      background: #faf5f7;
+      max-width: 430px;
+      height: 100%;
+      max-height: 932px;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.6);
-    }
-
-    @media (max-width: 480px) {
-      .phone-frame {
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-      }
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.7);
     }
 
     @media (min-width: 481px) {
-      .phone-frame {
+      .prototype-container {
+        height: 92vh;
         border-radius: 44px;
-        border: 10px solid #1a0c12;
-        margin: 20px 0;
+        border: 8px solid #1f0f15;
       }
     }
 
-    /* Status Bar */
-    .status-bar {
-      height: 40px;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-dark);
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-      z-index: 10;
-    }
-
-    /* Header */
-    .top-header {
-      padding: 14px 20px;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--soft-pink);
-    }
-
-    .brand {
-      font-size: 19px;
-      font-weight: 800;
-      background: var(--gradient-pink);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .npu-badge {
-      background: var(--soft-pink);
-      color: var(--primary-pink);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid var(--border-pink);
-    }
-
-    /* Screen View Container */
-    .view-container {
+    /* Full-Screen Prototype Image Display */
+    .prototype-viewport {
       flex: 1;
       position: relative;
-      overflow-y: auto;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       background: #faf5f7;
     }
 
-    .screen-view {
-      display: none;
-      padding: 18px;
-      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .screen-view.active {
-      display: block;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Common Card Styling */
-    .card {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(255, 194, 212, 0.4);
-      margin-bottom: 16px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text-dark);
-    }
-
-    .card-subtitle {
-      font-size: 12px;
-      color: var(--primary-pink);
-      font-weight: 700;
-    }
-
-    /* SCREEN 1: AI DISCOVERY */
-    .ai-hero-card {
-      background: linear-gradient(135deg, #fff0f4 0%, #ffd6e3 100%);
-      border-radius: 24px;
-      padding: 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border-pink);
-    }
-
-    .ai-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--gradient-pink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 24px;
-      box-shadow: 0 6px 16px rgba(255, 59, 117, 0.3);
-    }
-
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .chat-bubble {
-      max-width: 85%;
-      padding: 14px 16px;
-      border-radius: 20px;
-      font-size: 13.5px;
-      line-height: 1.5;
-    }
-
-    .chat-bubble.ai {
-      background: #ffffff;
-      color: var(--text-dark);
-      border-bottom-left-radius: 6px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--soft-pink);
-    }
-
-    .chat-bubble.user {
-      background: var(--gradient-pink);
-      color: #ffffff;
-      align-self: flex-end;
-      border-bottom-right-radius: 6px;
-      box-shadow: 0 4px 15px rgba(255, 59, 117, 0.3);
-    }
-
-    .input-bar {
-      display: flex;
-      gap: 10px;
-      background: #ffffff;
-      padding: 8px 8px 8px 16px;
-      border-radius: 30px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid var(--border-pink);
-    }
-
-    .input-bar input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 13.5px;
-      color: var(--text-dark);
-      background: transparent;
-    }
-
-    .send-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--gradient-pink);
-      border: none;
-      color: #fff;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(255, 59, 117, 0.3);
-    }
-
-    /* SCREEN 2: COMPATIBILITY MATCH */
-    .match-hero {
-      text-align: center;
-      padding: 24px 16px;
-    }
-
-    .match-ring-box {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto 16px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .match-ring-svg {
-      transform: rotate(-90deg);
+    .screen-img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
     }
 
-    .match-ring-bg {
-      fill: none;
-      stroke: var(--soft-pink);
-      stroke-width: 10;
+    .screen-img.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
     }
 
-    .match-ring-val {
-      fill: none;
-      stroke: url(#pinkGradient);
-      stroke-width: 10;
-      stroke-dasharray: 440;
-      stroke-dashoffset: 9;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 1s ease;
-    }
-
-    .match-score-text {
-      position: absolute;
-      text-align: center;
-    }
-
-    .match-num {
-      font-size: 38px;
-      font-weight: 800;
-      color: var(--primary-pink);
-      line-height: 1;
-    }
-
-    .match-lbl {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      margin-top: 4px;
-    }
-
-    .cosmic-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--gradient-gold);
-      color: #ffffff;
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 800;
-      box-shadow: 0 6px 18px rgba(251, 133, 0, 0.35);
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    .tag-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      background: var(--soft-pink);
-      color: var(--primary-pink);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 12.5px;
-      font-weight: 700;
-      border: 1px solid var(--border-pink);
-    }
-
-    /* SCREEN 3: TAP TO CONNECT */
-    .radar-container {
-      height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .radar-circle {
-      position: absolute;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 59, 117, 0.25);
-      animation: wave 2.5s ease-out infinite;
-    }
-
-    .radar-circle:nth-child(1) { width: 80px; height: 80px; animation-delay: 0s; }
-    .radar-circle:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.8s; }
-    .radar-circle:nth-child(3) { width: 200px; height: 200px; animation-delay: 1.6s; }
-
-    @keyframes wave {
-      0% { opacity: 1; transform: scale(0.6); }
-      100% { opacity: 0; transform: scale(1.3); }
-    }
-
-    .center-phone {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: var(--gradient-pink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 28px;
-      box-shadow: 0 10px 30px rgba(255, 59, 117, 0.4);
-      z-index: 5;
-    }
-
-    .peer-card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid var(--border-pink);
-    }
-
-    .peer-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .peer-avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: #ffd6e3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .connect-btn {
-      background: var(--gradient-pink);
-      color: #ffffff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-size: 12.5px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(255, 59, 117, 0.3);
-      transition: transform 0.2s;
-    }
-
-    .connect-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* Bottom Navigation */
-    .bottom-nav {
-      height: 74px;
-      background: #ffffff;
-      border-top: 1px solid var(--soft-pink);
+    /* Floating Navigation Tabs */
+    .prototype-nav {
+      height: 72px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--pink-border);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 0 12px;
-      z-index: 20;
+      padding: 0 10px;
+      z-index: 100;
     }
 
-    .nav-tab {
+    .nav-btn {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
       background: none;
       border: none;
       cursor: pointer;
-      width: 33.33%;
-      transition: all 0.2s;
+      padding: 8px 0;
+      transition: all 0.2s ease;
     }
 
-    .nav-tab.active {
-      color: var(--primary-pink);
+    .nav-btn.active {
+      color: var(--pink-primary);
+      font-weight: 800;
     }
 
-    .nav-tab-icon {
+    .nav-btn-icon {
       font-size: 22px;
-      transition: transform 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .nav-tab.active .nav-tab-icon {
-      transform: scale(1.2);
+    .nav-btn.active .nav-btn-icon {
+      transform: translateY(-2px) scale(1.2);
+    }
+
+    /* Touch Indicator Overlay */
+    .touch-hint {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(31, 15, 21, 0.75);
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0.9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
   </style>
 </head>
 <body>
 
-  <div class="phone-frame">
-    <!-- Status Bar -->
-    <div class="status-bar">
-      <span>9:41</span>
-      <span>💖 iQOO 15 NPU</span>
-      <span>100% ⚡</span>
+  <div class="prototype-container">
+    <!-- Touch Hint Header -->
+    <div class="touch-hint">Tap tabs below to test live prototype 💖</div>
+
+    <!-- Viewport rendering the generated Figma prototype images -->
+    <div class="prototype-viewport" id="viewport">
+      <img src="docs/assets/ai_discovery.png" id="img-discovery" class="screen-img active" alt="AI Discovery Screen">
+      <img src="docs/assets/compatibility_match.png" id="img-match" class="screen-img" alt="Compatibility Match Screen">
+      <img src="docs/assets/tap_to_connect.png" id="img-tap" class="screen-img" alt="Tap-to-Connect Screen">
     </div>
 
-    <!-- Header -->
-    <div class="top-header">
-      <div class="brand">
-        <span>PyaarPremaKaadhal</span>
-      </div>
-      <div class="npu-badge">Gemma 3 (4B int4)</div>
-    </div>
-
-    <!-- View Container -->
-    <div class="view-container">
-      
-      <!-- SCREEN 1: AI DISCOVERY -->
-      <div id="view-discovery" class="screen-view active">
-        <div class="ai-hero-card">
-          <div class="ai-avatar">🤖</div>
-          <div>
-            <div style="font-size: 14px; font-weight: 800; color: var(--text-dark);">Day 2 AI Personality Discovery</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Qualcomm NPU Executing Locally</div>
-          </div>
-        </div>
-
-        <div class="chat-container">
-          <div class="chat-bubble ai">
-            Hey there! Let's talk about what makes you feel connected. What's your ideal quiet weekend evening? 🌌
-          </div>
-          <div class="chat-bubble user">
-            I love stargazing on the terrace, listening to acoustic indie pop, and long talks over hot chai ☕
-          </div>
-          <div class="chat-bubble ai">
-            That sounds deeply peaceful. Extracting 128-dim MRL personality vector... ✨
-          </div>
-        </div>
-
-        <div class="input-bar">
-          <input type="text" placeholder="Share your thoughts with Gemma..." id="chatInput">
-          <button class="send-btn" onclick="sendChat()">➔</button>
-        </div>
-      </div>
-
-      <!-- SCREEN 2: COMPATIBILITY MATCH -->
-      <div id="view-match" class="screen-view">
-        <div class="card match-hero">
-          <div class="match-ring-box">
-            <svg class="match-ring-svg" viewBox="0 0 160 160">
-              <defs>
-                <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ff4b7d" />
-                  <stop offset="100%" stop-color="#ff2a6d" />
-                </linearGradient>
-              </defs>
-              <circle class="match-ring-bg" cx="80" cy="80" r="70"></circle>
-              <circle class="match-ring-val" cx="80" cy="80" r="70"></circle>
-            </svg>
-            <div class="match-score-text">
-              <div class="match-num">98%</div>
-              <div class="match-lbl">COSINE MATCH</div>
-            </div>
-          </div>
-
-          <div class="cosmic-badge">✨ 101 Cosmic Match</div>
-          <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Top 0.5% Rare Compatibility</p>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Shared Rare Niche Tags</span>
-            <span class="card-subtitle">3 Matched</span>
-          </div>
-          <div class="tag-grid">
-            <span class="tag">🌌 Stargazing</span>
-            <span class="tag">🎸 Indie Acoustic</span>
-            <span class="tag">☕ Midnight Chai</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SCREEN 3: TAP TO CONNECT -->
-      <div id="view-tap" class="screen-view">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">iQOO Tap-to-Connect</span>
-            <span class="card-subtitle">BLE + Wi-Fi Direct</span>
-          </div>
-
-          <div class="radar-container">
-            <div class="radar-circle"></div>
-            <div class="radar-circle"></div>
-            <div class="radar-circle"></div>
-            <div class="center-phone">📲</div>
-          </div>
-
-          <p style="text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 16px;">
-            Searching for nearby iQOO devices...
-          </p>
-
-          <div class="peer-card">
-            <div class="peer-info">
-              <div class="peer-avatar">💖</div>
-              <div>
-                <div style="font-size: 14px; font-weight: 800;">iQOO 15 Peer</div>
-                <div style="font-size: 11px; color: var(--primary-pink); font-weight: 700;">1.2m away • 98% Match</div>
-              </div>
-            </div>
-            <button class="connect-btn" onclick="alert('Instant Tap-to-Connect Initiated! 💖')">Tap Connect</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Navigation -->
-    <div class="bottom-nav">
-      <button class="nav-tab active" onclick="switchView('view-discovery', this)">
-        <span class="nav-tab-icon">🤖</span>
+    <!-- Bottom Navigation Bar -->
+    <div class="prototype-nav">
+      <button class="nav-btn active" onclick="showScreen('img-discovery', this)">
+        <span class="nav-btn-icon">🤖</span>
         <span>AI Discovery</span>
       </button>
-      <button class="nav-tab" onclick="switchView('view-match', this)">
-        <span class="nav-tab-icon">💖</span>
+      <button class="nav-btn" onclick="showScreen('img-match', this)">
+        <span class="nav-btn-icon">💖</span>
         <span>Match Engine</span>
       </button>
-      <button class="nav-tab" onclick="switchView('view-tap', this)">
-        <span class="nav-tab-icon">⚡</span>
+      <button class="nav-btn" onclick="showScreen('img-tap', this)">
+        <span class="nav-btn-icon">⚡</span>
         <span>Tap Connect</span>
       </button>
     </div>
   </div>
 
   <script>
-    function switchView(viewId, btn) {
-      document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    function showScreen(imgId, btn) {
+      document.querySelectorAll('.screen-img').forEach(img => img.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-      document.getElementById(viewId).classList.add('active');
+      document.getElementById(imgId).classList.add('active');
       btn.classList.add('active');
     }
 
-    function sendChat() {
-      const input = document.getElementById('chatInput');
-      if (!input.value.trim()) return;
+    // Touch Swipe Navigation for mobile phones
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const screens = ['img-discovery', 'img-match', 'img-tap'];
+    let currentIndex = 0;
 
-      const container = document.querySelector('.chat-container');
-      const userBubble = document.createElement('div');
-      userBubble.className = 'chat-bubble user';
-      userBubble.textContent = input.value;
-      container.appendChild(userBubble);
+    const viewport = document.getElementById('viewport');
 
-      input.value = '';
+    viewport.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
 
-      setTimeout(() => {
-        const aiBubble = document.createElement('div');
-        aiBubble.className = 'chat-bubble ai';
-        aiBubble.textContent = "Analyzing personality trait... Updated 128-dim MRL vector! 💖";
-        container.appendChild(aiBubble);
-        container.scrollTop = container.scrollHeight;
-      }, 600);
+    viewport.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 40 && currentIndex < screens.length - 1) {
+        currentIndex++;
+      } else if (touchEndX > touchStartX + 40 && currentIndex > 0) {
+        currentIndex--;
+      }
+      const targetImgId = screens[currentIndex];
+      const navButtons = document.querySelectorAll('.nav-btn');
+      showScreen(targetImgId, navButtons[currentIndex]);
     }
   </script>
 </body>
