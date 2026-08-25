@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PyaarPremaKaadhal — Figma Interactive Prototype</title>
+  <title>PyaarPremaKaadhal — Mobile Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
       --pink-primary: #ff3b75;
       --pink-soft: #fff0f4;
       --pink-border: #ffc2d4;
-      --gradient-pink: linear-gradient(135deg, #ff4b7d 0%, #ff2a6d 100%);
       --text-dark: #1f0f15;
       --text-muted: #85616e;
     }
@@ -36,8 +35,8 @@
       overflow: hidden;
     }
 
-    /* Mobile Prototype Frame */
-    .prototype-container {
+    /* Full Screen Mobile Container */
+    .app-viewport {
       width: 100%;
       max-width: 430px;
       height: 100%;
@@ -51,47 +50,47 @@
     }
 
     @media (min-width: 481px) {
-      .prototype-container {
+      .app-viewport {
         height: 92vh;
         border-radius: 44px;
         border: 8px solid #1f0f15;
       }
     }
 
-    /* Full-Screen Prototype Image Display */
-    .prototype-viewport {
+    /* Screen Image Viewport */
+    .screen-area {
       flex: 1;
       position: relative;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #faf5f7;
+      background: #ffffff;
     }
 
-    .screen-img {
+    .prototype-screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: top center;
+      object-position: center top;
       opacity: 0;
-      transform: scale(0.98);
-      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.97);
+      transition: opacity 0.25s ease, transform 0.25s ease;
       pointer-events: none;
     }
 
-    .screen-img.active {
+    .prototype-screen.active {
       opacity: 1;
       transform: scale(1);
       pointer-events: auto;
     }
 
-    /* Floating Navigation Tabs */
-    .prototype-nav {
+    /* Bottom Navigation Bar */
+    .nav-bar {
       height: 72px;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(16px);
       border-top: 1px solid var(--pink-border);
       display: flex;
@@ -101,7 +100,7 @@
       z-index: 100;
     }
 
-    .nav-btn {
+    .nav-tab {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -117,106 +116,72 @@
       transition: all 0.2s ease;
     }
 
-    .nav-btn.active {
+    .nav-tab.active {
       color: var(--pink-primary);
       font-weight: 800;
     }
 
-    .nav-btn-icon {
+    .nav-icon {
       font-size: 22px;
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .nav-btn.active .nav-btn-icon {
+    .nav-tab.active .nav-icon {
       transform: translateY(-2px) scale(1.2);
-    }
-
-    /* Touch Indicator Overlay */
-    .touch-hint {
-      position: absolute;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(31, 15, 21, 0.75);
-      color: #ffffff;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      backdrop-filter: blur(8px);
-      z-index: 50;
-      pointer-events: none;
-      opacity: 0.9;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
   </style>
 </head>
 <body>
 
-  <div class="prototype-container">
-    <!-- Touch Hint Header -->
-    <div class="touch-hint">Tap tabs below to test live prototype 💖</div>
-
-    <!-- Viewport rendering the generated Figma prototype images -->
-    <div class="prototype-viewport" id="viewport">
-      <img src="docs/assets/ai_discovery.png" id="img-discovery" class="screen-img active" alt="AI Discovery Screen">
-      <img src="docs/assets/compatibility_match.png" id="img-match" class="screen-img" alt="Compatibility Match Screen">
-      <img src="docs/assets/tap_to_connect.png" id="img-tap" class="screen-img" alt="Tap-to-Connect Screen">
+  <div class="app-viewport">
+    <!-- Active Mobile Screen Display -->
+    <div class="screen-area" id="screenArea">
+      <img src="docs/assets/ai_discovery.png" id="screen-discovery" class="prototype-screen active" alt="AI Discovery Screen">
+      <img src="docs/assets/compatibility_match.png" id="screen-match" class="prototype-screen" alt="Compatibility Match Screen">
+      <img src="docs/assets/tap_to_connect.png" id="screen-tap" class="prototype-screen" alt="Tap-to-Connect Screen">
     </div>
 
     <!-- Bottom Navigation Bar -->
-    <div class="prototype-nav">
-      <button class="nav-btn active" onclick="showScreen('img-discovery', this)">
-        <span class="nav-btn-icon">🤖</span>
+    <div class="nav-bar">
+      <button class="nav-tab active" onclick="switchTab('screen-discovery', this)">
+        <span class="nav-icon">🤖</span>
         <span>AI Discovery</span>
       </button>
-      <button class="nav-btn" onclick="showScreen('img-match', this)">
-        <span class="nav-btn-icon">💖</span>
+      <button class="nav-tab" onclick="switchTab('screen-match', this)">
+        <span class="nav-icon">💖</span>
         <span>Match Engine</span>
       </button>
-      <button class="nav-btn" onclick="showScreen('img-tap', this)">
-        <span class="nav-btn-icon">⚡</span>
+      <button class="nav-tab" onclick="switchTab('screen-tap', this)">
+        <span class="nav-icon">⚡</span>
         <span>Tap Connect</span>
       </button>
     </div>
   </div>
 
   <script>
-    function showScreen(imgId, btn) {
-      document.querySelectorAll('.screen-img').forEach(img => img.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function switchTab(screenId, tabBtn) {
+      document.querySelectorAll('.prototype-screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 
-      document.getElementById(imgId).classList.add('active');
-      btn.classList.add('active');
+      document.getElementById(screenId).classList.add('active');
+      tabBtn.classList.add('active');
     }
 
-    // Touch Swipe Navigation for mobile phones
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const screens = ['img-discovery', 'img-match', 'img-tap'];
-    let currentIndex = 0;
+    // Touch Swipe navigation support
+    let startX = 0;
+    let endX = 0;
+    const screens = ['screen-discovery', 'screen-match', 'screen-tap'];
+    let idx = 0;
 
-    const viewport = document.getElementById('viewport');
-
-    viewport.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, false);
-
-    viewport.addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    }, false);
-
-    function handleSwipe() {
-      if (touchEndX < touchStartX - 40 && currentIndex < screens.length - 1) {
-        currentIndex++;
-      } else if (touchEndX > touchStartX + 40 && currentIndex > 0) {
-        currentIndex--;
-      }
-      const targetImgId = screens[currentIndex];
-      const navButtons = document.querySelectorAll('.nav-btn');
-      showScreen(targetImgId, navButtons[currentIndex]);
-    }
+    const area = document.getElementById('screenArea');
+    area.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; });
+    area.addEventListener('touchend', e => {
+      endX = e.changedTouches[0].screenX;
+      if (endX < startX - 40 && idx < screens.length - 1) idx++;
+      else if (endX > startX + 40 && idx > 0) idx--;
+      const tabs = document.querySelectorAll('.nav-tab');
+      switchTab(screens[idx], tabs[idx]);
+    });
   </script>
 </body>
 </html>
