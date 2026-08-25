@@ -1,187 +1,1363 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PyaarPremaKaadhal — Mobile Prototype</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --pink-primary: #ff3b75;
-      --pink-soft: #fff0f4;
-      --pink-border: #ffc2d4;
-      --text-dark: #1f0f15;
-      --text-muted: #85616e;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PyaarPremaKaadhal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #ff3b75;
+  --pink-deep: #d4215a;
+  --pink-light: #ff7aa0;
+  --pink-soft: #fff0f4;
+  --pink-softer: #ffe0ea;
+  --pink-border: #ffc2d4;
+  --gold: #ffb703;
+  --gold-deep: #fb8500;
+  --green: #2ec27e;
+  --text: #1a0a10;
+  --text-mid: #6b3d50;
+  --text-muted: #a0718a;
+  --white: #ffffff;
+  --bg: #fdf7f9;
+  --grad: linear-gradient(135deg, #ff4b7d 0%, #ff2a6d 100%);
+  --grad-soft: linear-gradient(135deg, #fff0f4 0%, #ffe0ea 100%);
+  --grad-gold: linear-gradient(135deg, #ffb703, #fb8500);
+  --shadow: 0 8px 28px rgba(255,59,117,0.13);
+  --shadow-sm: 0 4px 14px rgba(255,59,117,0.08);
+  --shadow-deep: 0 16px 40px rgba(255,59,117,0.2);
+  --r: 20px;
+  --r-sm: 14px;
+  --r-full: 999px;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:'Plus Jakarta Sans',sans-serif;}
+html,body{width:100%;height:100%;background:#0a0408;display:flex;justify-content:center;align-items:center;overflow:hidden;}
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background-color: #0b0508;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+/* ── PHONE SHELL ── */
+.shell{
+  width:100%;max-width:420px;height:100%;max-height:900px;
+  background:var(--bg);display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+}
+@media(min-width:481px){
+  .shell{height:90vh;border-radius:48px;border:9px solid #1a0a10;}
+}
+@media(max-width:480px){
+  .shell{max-height:100vh;}
+}
 
-    /* Full Screen Mobile Container */
-    .app-viewport {
-      width: 100%;
-      max-width: 430px;
-      height: 100%;
-      max-height: 932px;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.7);
-    }
+/* ── STATUS BAR ── */
+.status-bar{
+  flex-shrink:0;height:42px;padding:0 22px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12.5px;font-weight:800;color:var(--text);
+  background:rgba(255,255,255,.9);backdrop-filter:blur(12px);z-index:99;
+}
+.status-right{display:flex;align-items:center;gap:6px;}
 
-    @media (min-width: 481px) {
-      .app-viewport {
-        height: 92vh;
-        border-radius: 44px;
-        border: 8px solid #1f0f15;
-      }
-    }
+/* ── SCREENS ROUTER ── */
+.screens{flex:1;position:relative;overflow:hidden;}
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  opacity:0;transform:translateX(100%);
+  transition:opacity .3s ease,transform .32s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;overflow-y:auto;
+}
+.screen.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.screen.exit-left{opacity:0;transform:translateX(-100%);}
 
-    /* Screen Image Viewport */
-    .screen-area {
-      flex: 1;
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #ffffff;
-    }
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  flex-shrink:0;height:72px;background:rgba(255,255,255,.96);
+  backdrop-filter:blur(16px);border-top:1px solid var(--pink-border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:0 8px;z-index:99;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--text-muted);font-size:10.5px;font-weight:700;
+  background:none;border:none;cursor:pointer;padding:8px 0;
+  transition:color .2s;
+}
+.nav-item.active{color:var(--pink);font-weight:800;}
+.nav-icon{font-size:21px;transition:transform .25s cubic-bezier(.175,.885,.32,1.275);}
+.nav-item.active .nav-icon{transform:translateY(-2px) scale(1.2);}
+.nav-item.hidden{display:none;}
 
-    .prototype-screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      opacity: 0;
-      transform: scale(0.97);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      pointer-events: none;
-    }
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.scroll-area::-webkit-scrollbar{display:none;}
 
-    .prototype-screen.active {
-      opacity: 1;
-      transform: scale(1);
-      pointer-events: auto;
-    }
+/* ── HEADERS ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--pink-border);
+  position:sticky;top:0;z-index:10;flex-shrink:0;
+}
+.page-title{font-size:17px;font-weight:800;color:var(--text);}
+.page-subtitle{font-size:11px;color:var(--text-muted);font-weight:600;}
 
-    /* Bottom Navigation Bar */
-    .nav-bar {
-      height: 72px;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--pink-border);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 10px;
-      z-index: 100;
-    }
+/* ── BUTTONS ── */
+.btn-primary{
+  background:var(--grad);color:#fff;border:none;
+  padding:14px 24px;border-radius:var(--r-full);
+  font-size:15px;font-weight:800;cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,59,117,.35);
+  transition:transform .15s,box-shadow .15s;width:100%;
+}
+.btn-primary:active{transform:scale(.97);box-shadow:0 3px 10px rgba(255,59,117,.25);}
+.btn-outline{
+  background:transparent;color:var(--pink);border:2px solid var(--pink-border);
+  padding:13px 24px;border-radius:var(--r-full);
+  font-size:15px;font-weight:800;cursor:pointer;width:100%;
+  transition:all .15s;
+}
+.btn-outline:active{background:var(--pink-soft);}
+.btn-small{
+  background:var(--grad);color:#fff;border:none;
+  padding:9px 18px;border-radius:var(--r-full);
+  font-size:12px;font-weight:800;cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,59,117,.3);transition:transform .15s;
+}
+.btn-small:active{transform:scale(.95);}
 
-    .nav-tab {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 700;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px 0;
-      transition: all 0.2s ease;
-    }
+/* ── CARDS ── */
+.card{
+  background:#fff;border-radius:var(--r);padding:18px;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.3);
+  margin-bottom:14px;
+}
+.card-sm{
+  background:#fff;border-radius:var(--r-sm);padding:14px;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.3);
+}
 
-    .nav-tab.active {
-      color: var(--pink-primary);
-      font-weight: 800;
-    }
+/* ── TAGS / PILLS ── */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--pink-soft);color:var(--pink);
+  padding:7px 14px;border-radius:var(--r-full);
+  font-size:12px;font-weight:700;border:1px solid var(--pink-border);
+}
+.pill.gold{background:linear-gradient(135deg,#fff8e1,#ffecb3);color:#b06000;border-color:#ffe082;}
 
-    .nav-icon {
-      font-size: 22px;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+/* ── INPUTS ── */
+.field{
+  background:#fff;border:1.5px solid var(--pink-border);
+  border-radius:var(--r-sm);padding:14px 16px;
+  font-size:14px;color:var(--text);width:100%;outline:none;
+  transition:border-color .2s;
+}
+.field:focus{border-color:var(--pink);}
+.field-label{font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:6px;display:block;}
+.field-group{margin-bottom:14px;}
 
-    .nav-tab.active .nav-icon {
-      transform: translateY(-2px) scale(1.2);
-    }
-  </style>
+/* ── AVATAR ── */
+.avatar{
+  border-radius:50%;object-fit:cover;flex-shrink:0;
+  background:var(--pink-soft);display:flex;align-items:center;justify-content:center;
+  font-size:20px;border:2px solid var(--pink-border);
+}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--pink-border);margin:16px 0;opacity:.5;}
+
+/* ── BADGE ── */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--grad-gold);color:#fff;
+  padding:6px 14px;border-radius:var(--r-full);
+  font-size:12px;font-weight:800;
+  box-shadow:0 4px 14px rgba(251,133,0,.35);
+}
+
+/* ──────────────────────────────────────── */
+/*  S C R E E N S                          */
+/* ──────────────────────────────────────── */
+
+/* SPLASH */
+#s-splash{
+  background:linear-gradient(160deg,#1a0a10 0%,#3d1527 60%,#6b1a38 100%);
+  justify-content:center;align-items:center;gap:0;
+}
+.splash-logo{text-align:center;padding:0 32px;}
+.splash-logo-icon{font-size:64px;margin-bottom:16px;animation:heartbeat 1.4s ease infinite;}
+@keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.splash-logo-title{
+  font-size:28px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:8px;
+}
+.splash-logo-sub{font-size:13px;color:rgba(255,255,255,.55);font-weight:600;}
+.splash-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:28px 0;}
+.splash-badge{
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);
+  padding:5px 12px;border-radius:var(--r-full);font-size:11px;font-weight:700;
+  border:1px solid rgba(255,255,255,.15);
+}
+.splash-cta{width:100%;padding:0 32px;}
+.splash-tagline{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-top:10px;font-weight:600;}
+
+/* ONBOARDING */
+#s-onboard{background:var(--white);}
+.onboard-progress{
+  height:4px;background:var(--pink-softer);margin:0;
+}
+.onboard-progress-bar{
+  height:100%;background:var(--grad);border-radius:0 2px 2px 0;
+  transition:width .35s ease;
+}
+.onboard-slide{display:none;flex:1;flex-direction:column;padding:24px 22px;}
+.onboard-slide.active{display:flex;}
+.onboard-emoji{font-size:52px;margin-bottom:16px;}
+.onboard-heading{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.onboard-body{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-bottom:24px;}
+.onboard-visual{
+  background:var(--grad-soft);border-radius:var(--r);padding:20px;
+  text-align:center;font-size:36px;margin-bottom:24px;
+  border:1px solid var(--pink-border);
+}
+.onboard-nav{display:flex;gap:10px;padding-bottom:4px;}
+.onboard-dots{display:flex;gap:6px;align-items:center;flex:1;justify-content:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--pink-softer);transition:all .2s;}
+.dot.active{width:20px;border-radius:4px;background:var(--pink);}
+
+/* AUTH */
+#s-auth{background:var(--white);justify-content:center;}
+.auth-inner{padding:32px 24px;}
+.auth-logo{text-align:center;margin-bottom:32px;}
+.auth-logo-icon{font-size:44px;}
+.auth-logo-name{font-size:20px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:6px;}
+.auth-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;}
+.phone-row{display:flex;gap:8px;}
+.phone-code{
+  width:72px;background:#fff;border:1.5px solid var(--pink-border);
+  border-radius:var(--r-sm);padding:14px 10px;font-size:14px;
+  font-weight:700;color:var(--text);text-align:center;outline:none;
+}
+.otp-row{display:flex;gap:10px;margin-bottom:14px;}
+.otp-box{
+  flex:1;height:56px;text-align:center;font-size:22px;font-weight:800;
+  border:1.5px solid var(--pink-border);border-radius:var(--r-sm);
+  background:#fff;color:var(--text);outline:none;
+}
+.otp-box:focus{border-color:var(--pink);}
+.resend-row{text-align:right;margin-bottom:16px;}
+.link{color:var(--pink);font-size:12.5px;font-weight:700;cursor:pointer;}
+
+/* PROFILE SETUP */
+#s-profile{background:var(--white);}
+.profile-setup-inner{padding:20px 20px 28px;}
+.avatar-picker{
+  width:90px;height:90px;border-radius:50%;background:var(--pink-soft);
+  border:3px dashed var(--pink-border);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;margin:0 auto 24px;cursor:pointer;
+  font-size:28px;
+}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.goal-card{
+  border:2px solid var(--pink-border);border-radius:var(--r);padding:16px 12px;
+  text-align:center;cursor:pointer;transition:all .2s;
+}
+.goal-card.selected{border-color:var(--pink);background:var(--pink-soft);}
+.goal-card-icon{font-size:28px;margin-bottom:6px;}
+.goal-card-label{font-size:13px;font-weight:800;color:var(--text);}
+.goal-card-sub{font-size:11px;color:var(--text-muted);font-weight:500;}
+
+/* AI DISCOVERY CHAT */
+#s-chat{background:var(--bg);}
+.chat-header{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 18px;background:rgba(255,255,255,.95);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--pink-border);
+  flex-shrink:0;
+}
+.chat-header-avatar{
+  width:40px;height:40px;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;box-shadow:0 4px 12px rgba(255,59,117,.3);
+}
+.chat-header-info{}
+.chat-name{font-size:14px;font-weight:800;color:var(--text);}
+.chat-status{font-size:11px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;}
+.chat-status::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;}
+.day-badge{
+  background:var(--pink-soft);color:var(--pink);
+  padding:4px 12px;border-radius:var(--r-full);font-size:11px;font-weight:800;
+  border:1px solid var(--pink-border);margin-left:auto;
+}
+.chat-messages{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.chat-messages::-webkit-scrollbar{display:none;}
+.msg{max-width:82%;word-break:break-word;}
+.msg-ai{align-self:flex-start;}
+.msg-user{align-self:flex-end;}
+.msg-bubble{
+  padding:12px 15px;border-radius:18px;font-size:13.5px;line-height:1.5;
+}
+.msg-ai .msg-bubble{
+  background:#fff;color:var(--text);border-bottom-left-radius:5px;
+  box-shadow:var(--shadow-sm);border:1px solid var(--pink-softer);
+}
+.msg-user .msg-bubble{
+  background:var(--grad);color:#fff;border-bottom-right-radius:5px;
+  box-shadow:0 4px 14px rgba(255,59,117,.3);
+}
+.msg-time{font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:600;}
+.msg-user .msg-time{text-align:right;}
+
+.prompt-chips{display:flex;gap:8px;flex-wrap:wrap;padding:8px 16px 0;}
+.prompt-chip{
+  background:#fff;border:1.5px solid var(--pink-border);color:var(--pink);
+  padding:7px 14px;border-radius:var(--r-full);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;
+}
+.prompt-chip:active{background:var(--pink-soft);}
+.prompt-chips-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.prompt-chips-scroll::-webkit-scrollbar{display:none;}
+
+.chat-input-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px 12px;background:rgba(255,255,255,.97);
+  border-top:1px solid var(--pink-border);flex-shrink:0;
+}
+.chat-input{
+  flex:1;background:var(--pink-soft);border:none;outline:none;
+  border-radius:var(--r-full);padding:11px 16px;font-size:13.5px;color:var(--text);
+}
+.chat-send{
+  width:42px;height:42px;border-radius:50%;background:var(--grad);
+  border:none;cursor:pointer;font-size:16px;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(255,59,117,.35);transition:transform .15s;
+}
+.chat-send:active{transform:scale(.92);}
+.typing-indicator{display:flex;gap:4px;align-items:center;padding:8px 12px;background:#fff;border-radius:18px;border-bottom-left-radius:5px;box-shadow:var(--shadow-sm);border:1px solid var(--pink-softer);}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--pink-light);animation:typing 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+
+/* VECTOR EXTRACTION */
+#s-vector{background:var(--bg);justify-content:center;align-items:center;}
+.vector-inner{padding:32px 24px;text-align:center;}
+.vector-orb{
+  width:130px;height:130px;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;margin:0 auto 20px;
+  box-shadow:0 0 0 16px rgba(255,59,117,.1),0 0 0 32px rgba(255,59,117,.05);
+  animation:orbPulse 2s ease-in-out infinite;
+}
+@keyframes orbPulse{0%,100%{box-shadow:0 0 0 16px rgba(255,59,117,.1),0 0 0 32px rgba(255,59,117,.05);}50%{box-shadow:0 0 0 24px rgba(255,59,117,.15),0 0 0 48px rgba(255,59,117,.06);}}
+.vector-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.vector-sub{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:28px;}
+.vector-progress{background:var(--pink-softer);border-radius:var(--r-full);height:8px;margin-bottom:20px;overflow:hidden;}
+.vector-bar{height:100%;background:var(--grad);border-radius:var(--r-full);animation:loadBar 2.5s ease forwards;}
+@keyframes loadBar{from{width:0%;}to{width:100%;}}
+.vector-dims{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+.dim-pill{
+  background:#fff;border:1px solid var(--pink-border);color:var(--pink);
+  padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:700;
+}
+
+/* MATCHES */
+#s-matches{background:var(--bg);}
+.match-list{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
+.match-card{
+  background:#fff;border-radius:var(--r);padding:16px;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.25);
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.match-card:active{transform:scale(.98);box-shadow:var(--shadow);}
+.match-avatar{
+  width:54px;height:54px;border-radius:50%;background:var(--pink-soft);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  border:2px solid var(--pink-border);flex-shrink:0;
+}
+.match-info{flex:1;}
+.match-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.match-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.match-tag{font-size:10.5px;font-weight:700;color:var(--pink);background:var(--pink-soft);padding:3px 9px;border-radius:var(--r-full);}
+.match-score-circle{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:conic-gradient(var(--pink) calc(var(--pct)*1%),var(--pink-softer) 0);
+  position:relative;
+}
+.match-score-inner{
+  position:absolute;inset:4px;border-radius:50%;background:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.match-score-num{font-size:14px;font-weight:800;color:var(--pink);}
+.match-score-lbl{font-size:7px;font-weight:700;color:var(--text-muted);}
+
+/* COMPATIBILITY DETAIL */
+#s-compat{background:var(--bg);}
+.compat-hero{
+  background:var(--grad);padding:28px 20px 40px;
+  text-align:center;color:#fff;position:relative;overflow:hidden;flex-shrink:0;
+}
+.compat-hero::after{
+  content:'💖';position:absolute;right:-10px;top:-10px;font-size:90px;opacity:.12;transform:rotate(-15deg);
+}
+.compat-pair{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;}
+.compat-av{
+  width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  border:3px solid rgba(255,255,255,.5);
+}
+.compat-heart{font-size:30px;}
+.compat-score-big{font-size:52px;font-weight:800;color:#fff;line-height:1;}
+.compat-score-lbl{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);margin-top:4px;}
+.compat-content{margin-top:-20px;padding:0 16px;flex:1;overflow-y:auto;}
+.compat-content::-webkit-scrollbar{display:none;}
+.cosmic-card{
+  background:#fff;border-radius:var(--r);padding:18px;
+  box-shadow:var(--shadow-deep);border:1px solid rgba(255,194,212,.3);
+  margin-bottom:14px;text-align:center;
+}
+.section-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* ANONYMOUS BONDING */
+#s-bond{background:var(--bg);}
+.bond-header{
+  background:var(--grad);padding:20px;color:#fff;flex-shrink:0;
+}
+.bond-timer-row{display:flex;align-items:center;gap:12px;margin-top:10px;}
+.bond-timer{
+  background:rgba(255,255,255,.2);border-radius:12px;padding:8px 16px;
+  font-size:20px;font-weight:800;color:#fff;letter-spacing:2px;
+}
+.bond-timer-label{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;}
+.bond-chat-messages{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+.bond-chat-messages::-webkit-scrollbar{display:none;}
+.bond-msg{max-width:80%;}
+.bond-msg.a{align-self:flex-start;}
+.bond-msg.b{align-self:flex-end;}
+.bond-bubble{
+  padding:11px 14px;font-size:13.5px;line-height:1.5;border-radius:18px;
+}
+.bond-msg.a .bond-bubble{background:#fff;color:var(--text);border-bottom-left-radius:5px;box-shadow:var(--shadow-sm);border:1px solid var(--pink-softer);}
+.bond-msg.b .bond-bubble{background:var(--grad);color:#fff;border-bottom-right-radius:5px;box-shadow:0 4px 14px rgba(255,59,117,.25);}
+.anon-badge{
+  background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);
+  padding:4px 12px;border-radius:var(--r-full);font-size:11px;font-weight:700;
+  backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);
+}
+.pii-warning{
+  background:#fff3e0;border:1px solid #ffe082;color:#e65100;
+  border-radius:var(--r-sm);padding:10px 14px;font-size:12px;
+  font-weight:700;display:flex;align-items:center;gap:8px;margin:6px 16px;
+}
+
+/* TAP TO CONNECT */
+#s-tap{background:var(--bg);}
+.tap-inner{padding:20px;flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;}
+.radar-wrap{width:220px;height:220px;position:relative;display:flex;align-items:center;justify-content:center;margin:20px auto 24px;}
+.ring{position:absolute;border-radius:50%;border:2px solid rgba(255,59,117,.2);animation:radarWave 2.5s ease-out infinite;}
+.ring:nth-child(1){width:80px;height:80px;animation-delay:0s;}
+.ring:nth-child(2){width:140px;height:140px;animation-delay:.7s;}
+.ring:nth-child(3){width:200px;height:200px;animation-delay:1.4s;}
+@keyframes radarWave{0%{opacity:.9;transform:scale(.5);}100%{opacity:0;transform:scale(1.2);}}
+.radar-center{
+  width:72px;height:72px;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;
+  box-shadow:0 10px 30px rgba(255,59,117,.45);z-index:5;
+}
+.tap-peers{display:flex;flex-direction:column;gap:10px;width:100%;padding-bottom:10px;}
+.peer-row{
+  background:#fff;border-radius:var(--r);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.3);
+}
+.peer-avatar{width:46px;height:46px;border-radius:50%;background:var(--pink-soft);display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid var(--pink-border);flex-shrink:0;}
+.peer-info{flex:1;}
+.peer-name{font-size:14px;font-weight:800;color:var(--text);}
+.peer-meta{font-size:11px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+
+/* PROFILE */
+#s-myprofile{background:var(--bg);}
+.profile-hero{
+  background:var(--grad);padding:32px 20px 50px;text-align:center;color:#fff;flex-shrink:0;
+}
+.profile-av-big{
+  width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+  border:3px solid rgba(255,255,255,.5);margin:0 auto 14px;
+}
+.profile-name-big{font-size:22px;font-weight:800;margin-bottom:4px;}
+.profile-bio{font-size:13px;color:rgba(255,255,255,.75);}
+.profile-body{margin-top:-24px;padding:0 16px;flex:1;overflow-y:auto;}
+.profile-body::-webkit-scrollbar{display:none;}
+.stat-row{display:flex;gap:10px;margin-bottom:14px;}
+.stat-card{
+  flex:1;background:#fff;border-radius:var(--r-sm);padding:14px;text-align:center;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.25);
+}
+.stat-num{font-size:22px;font-weight:800;color:var(--pink);}
+.stat-lbl{font-size:11px;font-weight:700;color:var(--text-muted);}
+.privacy-badge{
+  background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  border:1px solid #a5d6a7;color:#2e7d32;
+  border-radius:var(--r-sm);padding:10px 14px;
+  font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;
+  margin-bottom:14px;
+}
+
+/* NOTIFICATIONS */
+#s-notif{background:var(--bg);}
+.notif-list{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.notif-item{
+  background:#fff;border-radius:var(--r-sm);padding:14px;
+  display:flex;gap:12px;align-items:flex-start;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,194,212,.2);
+}
+.notif-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.notif-icon.pink{background:var(--pink-soft);}
+.notif-icon.gold{background:linear-gradient(135deg,#fff8e1,#ffecb3);}
+.notif-icon.green{background:#e8f5e9;}
+.notif-text-main{font-size:13px;font-weight:700;color:var(--text);}
+.notif-text-sub{font-size:11.5px;color:var(--text-muted);margin-top:3px;line-height:1.4;}
+.notif-time{font-size:10px;color:var(--text-muted);margin-top:4px;}
+
+/* ── MISC UTILS ── */
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.ph16{padding:0 16px;}
+.pb16{padding-bottom:16px;}
+.mt8{margin-top:8px;}
+.mt16{margin-top:16px;}
+.mb8{margin-bottom:8px;}
+.mb16{margin-bottom:16px;}
+.gap8{gap:8px;}
+.flex-row{display:flex;align-items:center;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;}
+.text-pink{color:var(--pink);font-weight:700;}
+.text-muted{color:var(--text-muted);}
+.fw800{font-weight:800;}
+.fs13{font-size:13px;}
+.fs12{font-size:12px;}
+.fs11{font-size:11px;}
+.line{height:1px;background:var(--pink-border);opacity:.4;margin:12px 0;}
+</style>
 </head>
 <body>
 
-  <div class="app-viewport">
-    <!-- Active Mobile Screen Display -->
-    <div class="screen-area" id="screenArea">
-      <img src="docs/assets/ai_discovery.png" id="screen-discovery" class="prototype-screen active" alt="AI Discovery Screen">
-      <img src="docs/assets/compatibility_match.png" id="screen-match" class="prototype-screen" alt="Compatibility Match Screen">
-      <img src="docs/assets/tap_to_connect.png" id="screen-tap" class="prototype-screen" alt="Tap-to-Connect Screen">
-    </div>
+<div class="shell" id="app">
 
-    <!-- Bottom Navigation Bar -->
-    <div class="nav-bar">
-      <button class="nav-tab active" onclick="switchTab('screen-discovery', this)">
-        <span class="nav-icon">🤖</span>
-        <span>AI Discovery</span>
-      </button>
-      <button class="nav-tab" onclick="switchTab('screen-match', this)">
-        <span class="nav-icon">💖</span>
-        <span>Match Engine</span>
-      </button>
-      <button class="nav-tab" onclick="switchTab('screen-tap', this)">
-        <span class="nav-icon">⚡</span>
-        <span>Tap Connect</span>
-      </button>
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="statusBar">
+    <span>9:41</span>
+    <span style="font-size:15px;">💖</span>
+    <div class="status-right">
+      <span>iQOO 15</span>
+      <span>100% ⚡</span>
     </div>
   </div>
 
-  <script>
-    function switchTab(screenId, tabBtn) {
-      document.querySelectorAll('.prototype-screen').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  <!-- SCREENS -->
+  <div class="screens" id="screenStack">
 
-      document.getElementById(screenId).classList.add('active');
-      tabBtn.classList.add('active');
-    }
+    <!-- ════════════════════════════════════
+         SPLASH SCREEN
+    ════════════════════════════════════ -->
+    <div class="screen active" id="s-splash">
+      <div class="splash-logo">
+        <div class="splash-logo-icon">💖</div>
+        <div class="splash-logo-title">PyaarPrema<br>Kaadhal</div>
+        <div class="splash-logo-sub">100% On-Device AI Relationship Discovery</div>
+        <div class="splash-badges">
+          <span class="splash-badge">🤖 Gemma 3 (4B int4)</span>
+          <span class="splash-badge">⚡ Snapdragon NPU</span>
+          <span class="splash-badge">🔒 100% Private</span>
+          <span class="splash-badge">🇮🇳 DPDP Act 2023</span>
+        </div>
+      </div>
+      <div class="splash-cta">
+        <button class="btn-primary" onclick="navigate('s-onboard')">Get Started</button>
+        <p class="splash-tagline">Already have an account? <span class="link" style="color:rgba(255,255,255,.65);" onclick="navigate('s-auth')">Sign in</span></p>
+      </div>
+    </div>
 
-    // Touch Swipe navigation support
-    let startX = 0;
-    let endX = 0;
-    const screens = ['screen-discovery', 'screen-match', 'screen-tap'];
-    let idx = 0;
+    <!-- ════════════════════════════════════
+         ONBOARDING SLIDES
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-onboard">
+      <div class="status-bar" style="background:#fff;border-bottom:1px solid var(--pink-border);">
+        <span style="color:var(--text-muted);font-size:12px;cursor:pointer;" onclick="navigate('s-splash')">← Back</span>
+        <span class="text-pink fw800 fs12" onclick="navigate('s-auth')">Skip</span>
+      </div>
+      <div class="onboard-progress">
+        <div class="onboard-progress-bar" id="obProgress" style="width:25%;"></div>
+      </div>
+      <div class="onboard-dots" style="padding:14px 0 0;">
+        <span class="dot active" id="dot0"></span>
+        <span class="dot" id="dot1"></span>
+        <span class="dot" id="dot2"></span>
+        <span class="dot" id="dot3"></span>
+      </div>
 
-    const area = document.getElementById('screenArea');
-    area.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; });
-    area.addEventListener('touchend', e => {
-      endX = e.changedTouches[0].screenX;
-      if (endX < startX - 40 && idx < screens.length - 1) idx++;
-      else if (endX > startX + 40 && idx > 0) idx--;
-      const tabs = document.querySelectorAll('.nav-tab');
-      switchTab(screens[idx], tabs[idx]);
-    });
-  </script>
+      <div class="onboard-slide active" id="ob0">
+        <div class="onboard-emoji">🤖</div>
+        <div class="onboard-heading">Your AI Personality Companion</div>
+        <div class="onboard-body">Gemma 3 (4B int4) runs entirely on your phone's Snapdragon NPU — no data ever leaves your device during personality discovery.</div>
+        <div class="onboard-visual">🧠 ⟶ 📱 ⟶ 💖<br><span style="font-size:14px;color:var(--text-muted);font-weight:600;margin-top:8px;display:block;">Zero cloud AI cost</span></div>
+        <div class="onboard-nav">
+          <button class="btn-primary" onclick="obNext()">Next →</button>
+        </div>
+      </div>
+
+      <div class="onboard-slide" id="ob1">
+        <div class="onboard-emoji">🧬</div>
+        <div class="onboard-heading">Privacy-First Vector Embeddings</div>
+        <div class="onboard-body">EmbeddingGemma 300M compresses your personality into a 128-dimensional vector using Matryoshka Representation Learning — mathematically private.</div>
+        <div class="onboard-visual">128-dim 🔐 MRL Vector<br><span style="font-size:12px;color:var(--text-muted);font-weight:600;margin-top:8px;display:block;">Your raw conversations never leave your phone</span></div>
+        <div class="onboard-nav">
+          <button class="btn-outline" onclick="obBack()">← Back</button>
+          <button class="btn-primary" onclick="obNext()">Next →</button>
+        </div>
+      </div>
+
+      <div class="onboard-slide" id="ob2">
+        <div class="onboard-emoji">✨</div>
+        <div class="onboard-heading">Cosmic Compatibility Engine</div>
+        <div class="onboard-body">Normalized cosine similarity scores match your 128-dim personality vector with thousands of others. Rare top-0.5% matches earn the legendary 101 Cosmic Match badge.</div>
+        <div class="onboard-visual"><span style="font-size:28px;font-weight:800;color:var(--pink);">98%</span><br><span class="badge" style="font-size:12px;margin-top:8px;display:inline-flex;">✨ 101 Cosmic Match</span></div>
+        <div class="onboard-nav">
+          <button class="btn-outline" onclick="obBack()">← Back</button>
+          <button class="btn-primary" onclick="obNext()">Next →</button>
+        </div>
+      </div>
+
+      <div class="onboard-slide" id="ob3">
+        <div class="onboard-emoji">📲</div>
+        <div class="onboard-heading">iQOO Tap-to-Connect</div>
+        <div class="onboard-body">Meet your match offline! iQOO Tap-to-Connect uses BLE + Wi-Fi Direct via Android Nearby Connections API for instant in-person compatibility checks — no internet needed.</div>
+        <div class="onboard-visual">📡 BLE + Wi-Fi Direct<br><span style="font-size:12px;color:var(--text-muted);font-weight:600;margin-top:8px;display:block;">Offline peer-to-peer discovery</span></div>
+        <div class="onboard-nav">
+          <button class="btn-outline" onclick="obBack()">← Back</button>
+          <button class="btn-primary" onclick="navigate('s-auth')">Let's Begin 💖</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         AUTH - PHONE / OTP
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-auth">
+      <div class="scroll-area">
+        <div class="auth-inner">
+          <div class="auth-logo">
+            <div class="auth-logo-icon">💖</div>
+            <div class="auth-logo-name">PyaarPremaKaadhal</div>
+          </div>
+          <div id="auth-phone-view">
+            <div class="auth-title">Enter your phone number</div>
+            <div class="auth-sub">We'll send you a verification code. Your number is never stored in plain text.</div>
+            <div class="field-group">
+              <label class="field-label">Phone Number</label>
+              <div class="phone-row">
+                <input class="phone-code" value="+91" readonly>
+                <input class="field" id="phoneInput" type="tel" placeholder="9876543210" style="flex:1;">
+              </div>
+            </div>
+            <button class="btn-primary" onclick="showOTP()" style="margin-bottom:14px;">Send OTP →</button>
+            <div class="card-sm" style="background:var(--pink-soft);border-color:var(--pink-border);font-size:12px;color:var(--text-mid);display:flex;gap:8px;align-items:flex-start;">
+              <span>🔒</span>
+              <span>Firebase Auth OTP — your number is verified but never shared with matches. DPDP Act 2023 compliant.</span>
+            </div>
+          </div>
+          <div id="auth-otp-view" style="display:none;">
+            <div class="auth-title">Enter OTP</div>
+            <div class="auth-sub">Sent to +91 <span id="authPhoneDisplay"></span></div>
+            <div class="otp-row">
+              <input class="otp-box" maxlength="1" value="4">
+              <input class="otp-box" maxlength="1" value="2">
+              <input class="otp-box" maxlength="1" value="8">
+              <input class="otp-box" maxlength="1" value="1">
+              <input class="otp-box" maxlength="1" value="0">
+              <input class="otp-box" maxlength="1" value="3">
+            </div>
+            <div class="resend-row"><span class="link">Resend in 0:43</span></div>
+            <button class="btn-primary" onclick="navigate('s-profile')">Verify & Continue →</button>
+            <p class="fs12 text-muted" style="text-align:center;margin-top:12px;cursor:pointer;" onclick="navigate('s-profile')">← Change number</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         PROFILE SETUP
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-profile">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Set Up Profile</div>
+          <div class="page-subtitle">Phase 0 — Registration</div>
+        </div>
+        <span class="text-muted fs12 fw800">1 / 1</span>
+      </div>
+      <div class="scroll-area">
+        <div class="profile-setup-inner">
+          <div class="avatar-picker" onclick="this.textContent='😊'">
+            📷<span style="font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:600;">Add Photo</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Your Name</label>
+            <input class="field" type="text" placeholder="e.g. Aarav" value="Aarav">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Age</label>
+            <input class="field" type="number" placeholder="e.g. 24" value="24">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Short Bio</label>
+            <textarea class="field" rows="3" placeholder="Tell Gemma a little about yourself...">Chai lover, weekend hiker, and stargazer. I believe in meaningful connections over swipe culture.</textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">What are you looking for?</label>
+            <div class="goal-grid">
+              <div class="goal-card selected" onclick="selectGoal(this)">
+                <div class="goal-card-icon">💍</div>
+                <div class="goal-card-label">Soulmate</div>
+                <div class="goal-card-sub">Long-term meaningful</div>
+              </div>
+              <div class="goal-card" onclick="selectGoal(this)">
+                <div class="goal-card-icon">🌸</div>
+                <div class="goal-card-label">Casual</div>
+                <div class="goal-card-sub">Open, exploratory</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="navigate('s-chat')">Begin AI Discovery 🤖</button>
+          <p class="fs11 text-muted" style="text-align:center;margin-top:10px;">Your profile is stored encrypted with AES-256 on-device</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         AI DISCOVERY CHAT (Phase 1)
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-chat">
+      <div class="chat-header">
+        <div class="chat-header-avatar">🤖</div>
+        <div class="chat-header-info">
+          <div class="chat-name">Aura — On-Device AI</div>
+          <div class="chat-status">Gemma 3 (4B int4) • 28 tok/s</div>
+        </div>
+        <span class="day-badge">Day 1 / 2</span>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg msg-ai">
+          <div class="msg-bubble">Hi Aarav! 💖 I'm Aura, your personality companion. I'll learn about you through natural conversation — everything stays on your device. Let's explore what makes you, <em>you</em>.</div>
+          <div class="msg-time">10:02 AM</div>
+        </div>
+        <div class="msg msg-ai">
+          <div class="msg-bubble">Let's start gently. What's your perfect quiet evening look like? 🌙</div>
+          <div class="msg-time">10:02 AM</div>
+        </div>
+        <div class="msg msg-user">
+          <div class="msg-bubble">Probably on the terrace, chai in hand, watching stars with some soft acoustic music in the background 🌌☕</div>
+          <div class="msg-time">10:04 AM</div>
+        </div>
+        <div class="msg msg-ai">
+          <div class="msg-bubble">That's beautifully specific — I can see you value sensory richness and quiet depth. ✨ I'm noting: <strong>stargazing</strong>, <strong>indie acoustic</strong>, <strong>night chai</strong> as rare niche tags. What kind of music exactly?</div>
+          <div class="msg-time">10:04 AM</div>
+        </div>
+      </div>
+
+      <div class="prompt-chips-scroll">
+        <div class="prompt-chips" id="promptChips">
+          <div class="prompt-chip" onclick="useSuggestion(this)">🎸 Indie acoustic</div>
+          <div class="prompt-chip" onclick="useSuggestion(this)">🎹 Classical piano</div>
+          <div class="prompt-chip" onclick="useSuggestion(this)">🎧 Ambient chill</div>
+          <div class="prompt-chip" onclick="useSuggestion(this)">🎻 Folk music</div>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input class="chat-input" id="chatInput" placeholder="Talk to Aura..." type="text">
+        <button class="chat-send" id="chatSend" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         VECTOR EXTRACTION (Phase 2)
+    ════════════════════════════════════ -->
+    <div class="screen center" id="s-vector">
+      <div class="vector-inner">
+        <div class="vector-orb">🧬</div>
+        <div class="vector-title">Building Your Personality Vector</div>
+        <div class="vector-sub">EmbeddingGemma 300M is compressing your 2-day conversations into a privacy-preserving 128-dimensional MRL vector on your Snapdragon NPU.</div>
+        <div class="vector-progress"><div class="vector-bar" id="vecBar"></div></div>
+        <p class="fs12 text-muted mb16">Processing locally — zero data leaves your device</p>
+        <div class="vector-dims">
+          <span class="dim-pill">🧠 Openness</span>
+          <span class="dim-pill">💬 Communication</span>
+          <span class="dim-pill">❤️ Attachment</span>
+          <span class="dim-pill">🌙 Evening-type</span>
+          <span class="dim-pill">🎸 Indie Music</span>
+          <span class="dim-pill">🌌 Stargazing</span>
+        </div>
+        <div style="margin-top:28px;width:100%;">
+          <button class="btn-primary" onclick="navigate('s-matches')">View My Matches 💖</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         MATCHES LIST (Phase 3)
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-matches">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Your Matches 💖</div>
+          <div class="page-subtitle">Cosine-scored • Top compatibility</div>
+        </div>
+        <span class="badge" style="font-size:10px;padding:5px 10px;">3 New</span>
+      </div>
+      <div class="scroll-area">
+        <div class="match-list">
+          <div class="match-card" onclick="navigate('s-compat')" style="border-color:var(--pink);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);"></div>
+            <div class="match-avatar" style="font-size:28px;">🌸</div>
+            <div class="match-info">
+              <div class="match-name">Priya, 23</div>
+              <div class="fs12 text-muted">Mumbai • Soulmate</div>
+              <div class="match-tags">
+                <span class="match-tag">🌌 Stargazing</span>
+                <span class="match-tag">🎸 Indie Music</span>
+                <span class="match-tag">☕ Chai</span>
+              </div>
+              <div style="margin-top:8px;"><span class="badge" style="font-size:10px;padding:4px 10px;">✨ 101 Cosmic Match</span></div>
+            </div>
+            <div class="match-score-circle" style="--pct:98;">
+              <div class="match-score-inner">
+                <div class="match-score-num">98%</div>
+                <div class="match-score-lbl">MATCH</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="match-card" onclick="navigate('s-compat')">
+            <div class="match-avatar">🌺</div>
+            <div class="match-info">
+              <div class="match-name">Kavya, 25</div>
+              <div class="fs12 text-muted">Bangalore • Soulmate</div>
+              <div class="match-tags">
+                <span class="match-tag">📚 Books</span>
+                <span class="match-tag">🎹 Piano</span>
+                <span class="match-tag">🌙 Night owl</span>
+              </div>
+            </div>
+            <div class="match-score-circle" style="--pct:87;">
+              <div class="match-score-inner">
+                <div class="match-score-num">87%</div>
+                <div class="match-score-lbl">MATCH</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="match-card" onclick="navigate('s-compat')">
+            <div class="match-avatar">🌻</div>
+            <div class="match-info">
+              <div class="match-name">Ananya, 22</div>
+              <div class="fs12 text-muted">Chennai • Casual</div>
+              <div class="match-tags">
+                <span class="match-tag">🎨 Art</span>
+                <span class="match-tag">☕ Coffee</span>
+                <span class="match-tag">🏔️ Hiking</span>
+              </div>
+            </div>
+            <div class="match-score-circle" style="--pct:76;">
+              <div class="match-score-inner">
+                <div class="match-score-num">76%</div>
+                <div class="match-score-lbl">MATCH</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px;">
+          <div class="card-sm" style="background:var(--pink-soft);border-color:var(--pink-border);font-size:12px;color:var(--text-mid);display:flex;gap:8px;align-items:flex-start;">
+            <span>🔒</span><span>Match relay uses only your anonymous 128-dim vector. Names, photos and conversations are never shared with the cloud.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         COMPATIBILITY DETAIL
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-compat">
+      <div class="compat-hero">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;" onclick="navigate('s-matches')">
+          <span style="font-size:18px;">←</span>
+          <span style="font-size:13px;font-weight:700;opacity:.8;">Back to Matches</span>
+        </div>
+        <div class="compat-pair">
+          <div class="compat-av" style="font-size:28px;">😊</div>
+          <div class="compat-heart">💖</div>
+          <div class="compat-av" style="font-size:28px;">🌸</div>
+        </div>
+        <div class="compat-score-big">98%</div>
+        <div class="compat-score-lbl">Compatibility Score</div>
+      </div>
+
+      <div class="compat-content">
+        <div class="cosmic-card">
+          <div class="badge" style="font-size:14px;padding:8px 20px;margin-bottom:10px;">✨ 101 Cosmic Match</div>
+          <p class="fs12 text-muted">Top 0.5% rarity • 3 shared rare niche tags</p>
+          <p class="fs11 text-muted mt8">Score = round((cosine_similarity(A, B) + 1) / 2 × 100)</p>
+        </div>
+
+        <div class="card">
+          <div class="section-title">🌟 Shared Rare Tags</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="pill">🌌 Stargazing</span>
+            <span class="pill">🎸 Indie Acoustic</span>
+            <span class="pill">☕ Late-Night Chai</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">📊 Vector Dimensions</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <div class="flex-between mb8"><span class="fs12 fw800">Openness</span><span class="text-pink fw800 fs12">94%</span></div>
+              <div style="background:var(--pink-softer);border-radius:var(--r-full);height:6px;"><div style="width:94%;height:100%;background:var(--grad);border-radius:var(--r-full);"></div></div>
+            </div>
+            <div>
+              <div class="flex-between mb8"><span class="fs12 fw800">Emotional Depth</span><span class="text-pink fw800 fs12">91%</span></div>
+              <div style="background:var(--pink-softer);border-radius:var(--r-full);height:6px;"><div style="width:91%;height:100%;background:var(--grad);border-radius:var(--r-full);"></div></div>
+            </div>
+            <div>
+              <div class="flex-between mb8"><span class="fs12 fw800">Communication Style</span><span class="text-pink fw800 fs12">88%</span></div>
+              <div style="background:var(--pink-softer);border-radius:var(--r-full);height:6px;"><div style="width:88%;height:100%;background:var(--grad);border-radius:var(--r-full);"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary mb16" onclick="navigate('s-bond')">Start Anonymous Bonding Window 🔐</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         ANONYMOUS BONDING (Phase 4)
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-bond">
+      <div class="bond-header">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#fff;">Anonymous Bonding Window 🔐</div>
+            <div style="font-size:11.5px;color:rgba(255,255,255,.7);margin-top:2px;">PII Guardrail Active — No contact details allowed</div>
+          </div>
+          <span class="anon-badge">Phase 4</span>
+        </div>
+        <div class="bond-timer-row">
+          <div class="bond-timer" id="bondTimer">6d 23h</div>
+          <div class="bond-timer-label">Window remaining</div>
+        </div>
+      </div>
+
+      <div class="pii-warning">
+        <span>🛡️</span>
+        <span>On-Device PII Guardrail active. Sharing phone numbers, social handles or emails will be blocked.</span>
+      </div>
+
+      <div class="bond-chat-messages" id="bondMessages">
+        <div class="bond-msg a">
+          <div class="bond-bubble">Hey 💖 I saw we had a 98% Cosmic Match! Honestly didn't think the AI would get me that well.</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Anonymous Rose 🌸 • 10:15 AM</div>
+        </div>
+        <div class="bond-msg b">
+          <div class="bond-bubble">Right?! The stargazing and chai combo matching was definitely fate 🌌☕</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:4px;text-align:right;">You • 10:16 AM</div>
+        </div>
+        <div class="bond-msg a">
+          <div class="bond-bubble">Haha yes! Do you also prefer cloudy nights or clear skies for stargazing? 🌙</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Anonymous Rose 🌸 • 10:17 AM</div>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input class="chat-input" id="bondInput" placeholder="Message anonymously..." type="text">
+        <button class="chat-send" onclick="sendBondMsg()">➤</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         TAP TO CONNECT (Phase 5)
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-tap">
+      <div class="page-header">
+        <div>
+          <div class="page-title">⚡ iQOO Tap-to-Connect</div>
+          <div class="page-subtitle">BLE + Wi-Fi Direct • Android Nearby Connections</div>
+        </div>
+      </div>
+      <div class="tap-inner">
+        <div class="radar-wrap">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="radar-center">📲</div>
+        </div>
+        <p class="fw800 fs13 mb16" style="color:var(--text);">Scanning for nearby iQOO devices...</p>
+        <div class="tap-peers">
+          <div class="peer-row" onclick="alert('Tap-to-Connect Initiated!\n\nInstant offline compatibility check via BLE + Wi-Fi Direct.\n\nMatch Score: 98% 💖')">
+            <div class="peer-avatar">🌸</div>
+            <div class="peer-info">
+              <div class="peer-name">iQOO 15 • Anonymous Rose</div>
+              <div class="peer-meta">1.2m away • 98% Match • 101 Cosmic ✨</div>
+            </div>
+            <button class="btn-small">Tap 💖</button>
+          </div>
+          <div class="peer-row" onclick="alert('Tap-to-Connect Initiated!\n\nMatch Score: 74%')">
+            <div class="peer-avatar">🌻</div>
+            <div class="peer-info">
+              <div class="peer-name">iQOO 15 • Anonymous Sunflower</div>
+              <div class="peer-meta">3.8m away • 74% Match</div>
+            </div>
+            <button class="btn-small">Tap 💖</button>
+          </div>
+        </div>
+        <div class="card-sm" style="background:var(--pink-soft);border-color:var(--pink-border);font-size:12px;color:var(--text-mid);display:flex;gap:8px;width:100%;margin-top:8px;">
+          <span>📡</span><span>Peer exchange uses only your 128-dim anonymous vector. Actual identity stays private until you both consent to reveal.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         MY PROFILE PAGE
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-myprofile">
+      <div class="profile-hero">
+        <div class="profile-av-big">😊</div>
+        <div class="profile-name-big">Aarav, 24</div>
+        <div class="profile-bio">Chai lover · Stargazer · Indie music fan</div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">
+          <span class="anon-badge" style="font-size:11px;">💍 Soulmate</span>
+          <span class="anon-badge" style="font-size:11px;">🔒 NPU Encrypted</span>
+        </div>
+      </div>
+      <div class="profile-body" style="padding-top:32px;">
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-num">98%</div><div class="stat-lbl">Top Match</div></div>
+          <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Matches</div></div>
+          <div class="stat-card"><div class="stat-num">128</div><div class="stat-lbl">Vec Dims</div></div>
+        </div>
+        <div class="privacy-badge"><span>🛡️</span><span>All data stored AES-256 encrypted with Android KeyStore. DPDP Act 2023 compliant.</span></div>
+        <div class="card">
+          <div class="section-title">🌟 My Rare Niche Tags</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="pill">🌌 Stargazing</span>
+            <span class="pill">🎸 Indie Acoustic</span>
+            <span class="pill">☕ Late-Night Chai</span>
+            <span class="pill">🏔️ Hiking</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">📋 My Profile</div>
+          <div class="line"></div>
+          <div class="flex-between" style="margin-bottom:12px;">
+            <span class="fs13 text-muted">Goal</span><span class="fs13 fw800">💍 Soulmate</span>
+          </div>
+          <div class="flex-between" style="margin-bottom:12px;">
+            <span class="fs13 text-muted">Vector Generated</span><span class="fs13 fw800 text-pink">✅ Yes</span>
+          </div>
+          <div class="flex-between">
+            <span class="fs13 text-muted">AI Discovery</span><span class="fs13 fw800 text-pink">Day 2 Complete</span>
+          </div>
+        </div>
+        <button class="btn-outline mb16" onclick="navigate('s-chat')">🤖 Continue AI Chat</button>
+        <button class="btn-outline" style="border-color:#e53935;color:#e53935;" onclick="alert('Signed out — all local data remains encrypted on your device. DPDP Act 2023.')">Sign Out</button>
+        <div style="height:20px;"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+         NOTIFICATIONS
+    ════════════════════════════════════ -->
+    <div class="screen" id="s-notif">
+      <div class="page-header">
+        <div class="page-title">Notifications 🔔</div>
+        <span class="text-pink fw800 fs12 link">Mark all read</span>
+      </div>
+      <div class="scroll-area">
+        <div class="notif-list">
+          <div class="notif-item">
+            <div class="notif-icon gold">✨</div>
+            <div>
+              <div class="notif-text-main">101 Cosmic Match Unlocked!</div>
+              <div class="notif-text-sub">You and Anonymous Rose 🌸 are in the top 0.5% compatibility with 3 shared rare niche tags.</div>
+              <div class="notif-time">Just now</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon pink">💖</div>
+            <div>
+              <div class="notif-text-main">New match: 98% compatibility</div>
+              <div class="notif-text-sub">Priya's personality vector aligns deeply with yours in Openness and Emotional Depth dimensions.</div>
+              <div class="notif-time">2 min ago</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon pink">💬</div>
+            <div>
+              <div class="notif-text-main">New message in Anonymous Bonding</div>
+              <div class="notif-text-sub">Anonymous Rose 🌸 sent a new message in your 7-day bonding window.</div>
+              <div class="notif-time">5 min ago</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon green">🛡️</div>
+            <div>
+              <div class="notif-text-main">PII Guardrail Activated</div>
+              <div class="notif-text-sub">A message containing a possible phone number was flagged and blocked by on-device Gemma Guard.</div>
+              <div class="notif-time">12 min ago</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon pink">📲</div>
+            <div>
+              <div class="notif-text-main">iQOO Tap-to-Connect nearby!</div>
+              <div class="notif-text-sub">An iQOO device with 87% compatibility detected 2.4m away via BLE.</div>
+              <div class="notif-time">28 min ago</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon pink">🤖</div>
+            <div>
+              <div class="notif-text-main">Day 2 AI Conversation Unlocked</div>
+              <div class="notif-text-sub">Aura is ready to continue your personality discovery. Day 2 goes deeper into values and attachment style.</div>
+              <div class="notif-time">Yesterday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-item hidden" id="nav-chat" onclick="navTo('s-chat','nav-chat')">
+      <span class="nav-icon">🤖</span>
+      <span>Discover</span>
+    </button>
+    <button class="nav-item hidden active" id="nav-matches" onclick="navTo('s-matches','nav-matches')">
+      <span class="nav-icon">💖</span>
+      <span>Matches</span>
+    </button>
+    <button class="nav-item hidden" id="nav-tap" onclick="navTo('s-tap','nav-tap')">
+      <span class="nav-icon">⚡</span>
+      <span>Tap Connect</span>
+    </button>
+    <button class="nav-item hidden" id="nav-notif" onclick="navTo('s-notif','nav-notif')">
+      <span class="nav-icon">🔔</span>
+      <span>Alerts</span>
+    </button>
+    <button class="nav-item hidden" id="nav-profile" onclick="navTo('s-myprofile','nav-profile')">
+      <span class="nav-icon">😊</span>
+      <span>Profile</span>
+    </button>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+// ─── NAVIGATION ───────────────────────────
+const NAV_SCREENS = ['s-matches','s-chat','s-tap','s-notif','s-myprofile'];
+const NAV_IDS     = ['nav-matches','nav-chat','nav-tap','nav-notif','nav-profile'];
+let currentScreen = 's-splash';
+
+function navigate(to) {
+  const from = document.getElementById(currentScreen);
+  const toEl  = document.getElementById(to);
+  from.classList.remove('active');
+  from.classList.add('exit-left');
+  setTimeout(() => from.classList.remove('exit-left'), 350);
+  toEl.classList.add('active');
+  currentScreen = to;
+
+  // Show / hide bottom nav
+  const showNav = NAV_SCREENS.includes(to);
+  const nav = document.getElementById('bottomNav');
+  nav.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('hidden', !showNav);
+  });
+  if (showNav) {
+    const navId = NAV_IDS[NAV_SCREENS.indexOf(to)];
+    nav.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const activeBtn = document.getElementById(navId);
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+  // Scroll to top
+  toEl.querySelectorAll('.scroll-area,.chat-messages,.bond-chat-messages,.compat-content,.profile-body,.tap-inner').forEach(el => el.scrollTop = 0);
+}
+
+function navTo(screen, navId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(navId).classList.add('active');
+  const from = document.getElementById(currentScreen);
+  const toEl = document.getElementById(screen);
+  from.classList.remove('active');
+  toEl.classList.add('active');
+  currentScreen = screen;
+}
+
+// ─── ONBOARDING ───────────────────────────
+let obStep = 0;
+const obSlides = ['ob0','ob1','ob2','ob3'];
+const obPcts   = ['25%','50%','75%','100%'];
+
+function obNext() {
+  document.getElementById(obSlides[obStep]).classList.remove('active');
+  document.getElementById('dot'+obStep).classList.remove('active');
+  obStep++;
+  document.getElementById(obSlides[obStep]).classList.add('active');
+  document.getElementById('dot'+obStep).classList.add('active');
+  document.getElementById('obProgress').style.width = obPcts[obStep];
+}
+function obBack() {
+  document.getElementById(obSlides[obStep]).classList.remove('active');
+  document.getElementById('dot'+obStep).classList.remove('active');
+  obStep--;
+  document.getElementById(obSlides[obStep]).classList.add('active');
+  document.getElementById('dot'+obStep).classList.add('active');
+  document.getElementById('obProgress').style.width = obPcts[obStep];
+}
+
+// ─── AUTH ─────────────────────────────────
+function showOTP() {
+  const v = document.getElementById('phoneInput').value || '9876543210';
+  document.getElementById('authPhoneDisplay').textContent = v;
+  document.getElementById('auth-phone-view').style.display = 'none';
+  document.getElementById('auth-otp-view').style.display  = 'block';
+}
+
+// ─── GOAL SELECT ──────────────────────────
+function selectGoal(el) {
+  document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── AI CHAT ──────────────────────────────
+const aiReplies = [
+  "That's a beautiful perspective 💖 I'm noting it in your personality vector. How does music make you feel emotionally?",
+  "Interesting — so your connection style seems deeply sensory and introspective. Tell me, do you enjoy solitude or do you recharge with people around?",
+  "I love how specific you are! That specificity is actually rare and shows high Openness. ✨ One more — what kind of relationship energy do you bring?",
+  "You're painting a vivid picture of your inner world 🌙 I'm encoding: *thoughtful*, *emotionally aware*, *quietly adventurous* into your 128-dim vector.",
+  "Gemma 3 NPU inference: 97ms ⚡ Vector dimension updated. Tell me about a moment that felt truly alive for you."
+];
+let aiIdx = 0;
+
+function sendMessage() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  addMsg(msg, 'user');
+
+  const typing = document.createElement('div');
+  typing.className = 'msg msg-ai';
+  typing.id = 'typingIndicator';
+  typing.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  const container = document.getElementById('chatMessages');
+  container.appendChild(typing);
+  container.scrollTop = container.scrollHeight;
+
+  setTimeout(() => {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+    const reply = aiReplies[aiIdx % aiReplies.length];
+    aiIdx++;
+    addMsg(reply, 'ai');
+  }, 1200);
+}
+
+function useSuggestion(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  sendMessage();
+}
+
+function addMsg(text, role) {
+  const container = document.getElementById('chatMessages');
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `msg msg-${role}`;
+  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ─── BOND CHAT ────────────────────────────
+const bondReplies = [
+  "Clear skies definitely — I like being able to actually spot constellations 🌟",
+  "Haha same! Have you tried Orion's belt on a winter night? 🌠",
+  "That sounds amazing! Maybe we'll get to do this together one day 💖",
+  "You have such a calming way of seeing things 🌙 I feel like I've known you forever already",
+];
+let bondIdx = 0;
+
+function sendBondMsg() {
+  const inp = document.getElementById('bondInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+
+  // PII check
+  if (/\d{10}|@|\binstagram\b|\bwhatsapp\b|\bphone\b|\bemail\b/i.test(msg)) {
+    inp.value = '';
+    alert('🛡️ PII Guardrail Blocked\n\nYour message may contain contact details (phone, social handles). This is not allowed during the anonymous bonding window to protect both users.\n\nGemma Prompt Guard • Regex Filter • FLAG_SECURE');
+    return;
+  }
+  inp.value = '';
+
+  const c = document.getElementById('bondMessages');
+  const d = document.createElement('div');
+  d.className = 'bond-msg b';
+  d.innerHTML = `<div class="bond-bubble">${msg}</div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;text-align:right;">You • Just now</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+
+  setTimeout(() => {
+    const r = document.createElement('div');
+    r.className = 'bond-msg a';
+    r.innerHTML = `<div class="bond-bubble">${bondReplies[bondIdx % bondReplies.length]}</div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Anonymous Rose 🌸 • Just now</div>`;
+    c.appendChild(r);
+    c.scrollTop = c.scrollHeight;
+    bondIdx++;
+  }, 1000);
+}
+
+// ─── VECTOR SCREEN AUTO-NAVIGATE ──────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('s-vector').addEventListener('animationend', () => {}, false);
+});
+
+// ─── ENTER KEY SUPPORT ────────────────────
+document.getElementById('chatInput').addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(); });
+document.getElementById('bondInput').addEventListener('keydown', e => { if(e.key==='Enter') sendBondMsg(); });
+
+// ─── TOUCH SWIPE (global) ─────────────────
+let tsX = 0;
+document.getElementById('screenStack').addEventListener('touchstart', e => { tsX = e.touches[0].clientX; });
+document.getElementById('screenStack').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tsX;
+  if (Math.abs(dx) < 50) return;
+  if (!NAV_SCREENS.includes(currentScreen)) return;
+  const idx = NAV_SCREENS.indexOf(currentScreen);
+  if (dx < 0 && idx < NAV_SCREENS.length - 1) navTo(NAV_SCREENS[idx+1], NAV_IDS[idx+1]);
+  else if (dx > 0 && idx > 0) navTo(NAV_SCREENS[idx-1], NAV_IDS[idx-1]);
+});
+</script>
 </body>
 </html>
